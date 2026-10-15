@@ -1,0 +1,4563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EduBridge AI — Campus Buddy: Beginner-friendly educational chatbot and learning gap detector for college students.">
+  <title>EduBridge AI — Campus Buddy</title>
+
+  <!-- ====================================================================
+       EDUBRIDGE AI — CAMPUS BUDDY
+       All-in-one Single File Web Application (HTML, CSS, JavaScript)
+       No external CDNs, APIs, or backend required. Works 100% offline.
+       ==================================================================== -->
+
+  <style>
+    /* ====================================================================
+       1. CSS CUSTOM PROPERTIES (THEME & DESIGN SYSTEM)
+       Palette: Warm Cream Background, Teal (#0D9488) & Blue (#2563EB) Accents
+       ==================================================================== */
+    :root {
+      /* Cream Base Palette */
+      --bg-cream: #FAF7F2;          /* Primary page background */
+      --bg-surface: #FFFFFF;        /* Card & surface background */
+      --bg-sidebar: #F4EFE6;        /* Sidebar warm cream background */
+      --bg-sidebar-hover: #EBE4D8;  /* Sidebar link hover */
+      --bg-accent-subtle: #F0EAE1;  /* Subtle containers and wells */
+
+      /* Borders & Dividers */
+      --border-subtle: #E6DFC5;
+      --border-light: #EFE9DE;
+      --border-card: #E8E2D6;
+
+      /* Primary Brand: Teal */
+      --teal-primary: #0D9488;
+      --teal-hover: #0F766E;
+      --teal-active: #115E59;
+      --teal-light: #E6FFFA;
+      --teal-subtle: #CCFBF1;
+      --teal-glow: rgba(13, 148, 136, 0.2);
+
+      /* Secondary Accent: Academic Blue */
+      --blue-accent: #2563EB;
+      --blue-hover: #1D4ED8;
+      --blue-light: #EFF6FF;
+      --blue-subtle: #DBEAFE;
+
+      /* Semantic Alert Colors */
+      --color-success: #10B981;
+      --color-success-bg: #ECFDF5;
+      --color-warning: #F59E0B;
+      --color-warning-bg: #FFFBEB;
+      --color-danger: #EF4444;
+      --color-danger-bg: #FEF2F2;
+      --color-info: #0284C7;
+      --color-info-bg: #F0F9FF;
+
+      /* Typography & Neutral Colors */
+      --text-main: #1F2937;
+      --text-muted: #4B5563;
+      --text-light: #6B7280;
+      --text-inverse: #FFFFFF;
+
+      /* Accessibility & Layout */
+      --font-scale: 100%;
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(45, 35, 20, 0.08);
+      --shadow-lg: 0 10px 25px rgba(45, 35, 20, 0.12);
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* Accessibility Font Scaling */
+    html {
+      font-size: var(--font-scale);
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+    }
+
+    /* Focus visible accessibility outline */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--teal-primary);
+      outline-offset: 2px;
+    }
+
+    /* ====================================================================
+       2. APP LAYOUT (SIDEBAR + MAIN CONTENT + RESPONSIVE DRAWER)
+       ==================================================================== */
+    #app-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform var(--transition-normal);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 20px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--teal-primary), var(--blue-accent));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 8px var(--teal-glow);
+      flex-shrink: 0;
+    }
+
+    .brand-titles h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .brand-titles span {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      color: var(--teal-primary);
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-grow: 1;
+    }
+
+    .nav-item-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.93rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--transition-fast);
+    }
+
+    .nav-item-btn svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      stroke: currentColor;
+    }
+
+    .nav-item-btn:hover {
+      background-color: var(--bg-sidebar-hover);
+      color: var(--text-main);
+    }
+
+    .nav-item-btn.active {
+      background-color: var(--bg-surface);
+      color: var(--teal-primary);
+      border-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-item-btn.active svg {
+      stroke: var(--teal-primary);
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      background: var(--teal-light);
+      color: var(--teal-hover);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      color: var(--text-light);
+      background: rgba(255,255,255,0.4);
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 8px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--teal-subtle);
+      color: var(--teal-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    /* --- MAIN CONTENT WRAPPER --- */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background-color: var(--bg-cream);
+    }
+
+    /* --- TOP HEADER BAR --- */
+    .app-header {
+      height: var(--header-height);
+      background-color: rgba(250, 247, 242, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    .view-title-wrap h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .view-title-wrap p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Font Size Accessibility Controls */
+    .font-size-controls {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 2px 4px;
+      gap: 2px;
+    }
+
+    .font-btn {
+      background: transparent;
+      border: none;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .font-btn:hover {
+      background: var(--bg-sidebar-hover);
+      color: var(--text-main);
+    }
+
+    .font-btn.active {
+      background: var(--teal-primary);
+      color: #fff;
+    }
+
+    /* Language Switcher */
+    .lang-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 4px 10px;
+    }
+
+    .lang-select-wrap svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--teal-primary);
+    }
+
+    .lang-select {
+      background: transparent;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Offline/Online Status Badge */
+    .offline-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--color-success-bg);
+      color: var(--color-success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .offline-badge.offline-mode {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    /* --- PAGE CONTENT CONTAINER --- */
+    .page-content {
+      padding: 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    /* Dynamic View Panes */
+    .view-pane {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====================================================================
+       3. REUSABLE CARD & BUTTON STYLES
+       ==================================================================== */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--teal-primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .btn-teal {
+      background-color: var(--teal-primary);
+      color: #fff;
+      box-shadow: 0 2px 6px var(--teal-glow);
+    }
+    .btn-teal:hover {
+      background-color: var(--teal-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-blue {
+      background-color: var(--blue-accent);
+      color: #fff;
+    }
+    .btn-blue:hover {
+      background-color: var(--blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-accent-subtle);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background-color: var(--bg-sidebar-hover);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover {
+      border-color: var(--teal-primary);
+      color: var(--teal-primary);
+      background-color: var(--teal-light);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pill-teal { background: var(--teal-light); color: var(--teal-hover); }
+    .pill-blue { background: var(--blue-light); color: var(--blue-hover); }
+    .pill-warning { background: var(--color-warning-bg); color: #B45309; }
+    .pill-danger { background: var(--color-danger-bg); color: #B91C1C; }
+    .pill-success { background: var(--color-success-bg); color: #047857; }
+
+    /* ====================================================================
+       4. VIEW 1: MODERN DASHBOARD
+       ==================================================================== */
+    .hero-banner {
+      background: linear-gradient(135deg, #0F766E, #0D9488 40%, #2563EB);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(13, 148, 136, 0.25);
+    }
+
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero-banner h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .hero-banner p {
+      font-size: 0.98rem;
+      opacity: 0.92;
+      max-width: 650px;
+      margin-bottom: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      background: #FFFFFF;
+      color: var(--teal-primary);
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .btn-hero-primary:hover {
+      background: #F8FAFC;
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-secondary {
+      background: rgba(255,255,255,0.18);
+      color: #FFFFFF;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(255,255,255,0.4);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Metric Stat Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-icon.teal { background: var(--teal-light); color: var(--teal-primary); }
+    .stat-icon.blue { background: var(--blue-light); color: var(--blue-accent); }
+    .stat-icon.warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .stat-icon.success { background: var(--color-success-bg); color: var(--color-success); }
+
+    .stat-info .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .stat-info .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Dashboard Modules Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .quick-launch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .quick-card {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .quick-card:hover {
+      background: var(--bg-surface);
+      border-color: var(--teal-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quick-card h4 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quick-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .tip-box {
+      background: var(--bg-accent-subtle);
+      border-left: 4px solid var(--teal-primary);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 14px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      margin-top: 14px;
+    }
+
+    /* ====================================================================
+       5. VIEW 2: AI TUTOR CHATBOT
+       ==================================================================== */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - var(--header-height) - 70px);
+      max-height: 780px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: var(--bg-sidebar);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chat-bot-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bot-avatar-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--teal-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .bot-title-text h4 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bot-status-tag {
+      font-size: 0.72rem;
+      color: var(--teal-hover);
+      font-weight: 600;
+      background: var(--teal-light);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .disclaimer-banner {
+      background: #FFFBEB;
+      border-bottom: 1px solid #FDE68A;
+      color: #92400E;
+      font-size: 0.76rem;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: #FDFAF6;
+    }
+
+    .chat-msg {
+      display: flex;
+      gap: 12px;
+      max-width: 82%;
+      animation: msgPop 0.2s ease-out;
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .chat-msg.bot {
+      align-self: flex-start;
+    }
+
+    .msg-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .chat-msg.bot .msg-avatar {
+      background: var(--teal-primary);
+      color: #fff;
+    }
+    .chat-msg.user .msg-avatar {
+      background: var(--blue-accent);
+      color: #fff;
+    }
+
+    .msg-bubble {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+    }
+
+    .chat-msg.user .msg-bubble {
+      background: var(--teal-primary);
+      color: #FFFFFF;
+      border-color: var(--teal-primary);
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg.bot .msg-bubble {
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-time {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-light);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    .chat-msg.user .msg-time {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .msg-code-block {
+      background: #1E293B;
+      color: #F8FAFC;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.82rem;
+      margin: 8px 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .msg-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .msg-action-btn:hover {
+      background: var(--bg-sidebar-hover);
+      color: var(--teal-primary);
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      width: fit-content;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--teal-primary);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+    }
+
+    /* Quick Prompt Chips */
+    .quick-chips-wrap {
+      padding: 10px 16px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .quick-chip {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .quick-chip:hover {
+      background: var(--teal-light);
+      border-color: var(--teal-primary);
+      color: var(--teal-hover);
+    }
+
+    /* Chat Input Form */
+    .chat-input-bar {
+      padding: 14px 18px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-field-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .chat-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--border-subtle);
+      background: var(--bg-cream);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      color: var(--text-main);
+    }
+
+    .chat-input:focus {
+      border-color: var(--teal-primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px var(--teal-glow);
+    }
+
+    .chat-input.shake {
+      animation: shake 0.3s ease-in-out;
+      border-color: var(--color-danger);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .mic-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg-accent-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .mic-btn:hover {
+      background: var(--bg-sidebar-hover);
+      color: var(--teal-primary);
+    }
+
+    .mic-btn.listening {
+      background: var(--color-danger);
+      color: #fff;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--teal-primary);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px var(--teal-glow);
+    }
+
+    .send-btn:hover {
+      background: var(--teal-hover);
+      transform: scale(1.05);
+    }
+
+    /* ====================================================================
+       6. VIEW 3: DIAGNOSE (LEARNING GAP DETECTOR QUIZ)
+       ==================================================================== */
+    .quiz-container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .quiz-progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-accent-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal-primary), var(--blue-accent));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-meta-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .question-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .question-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--teal-hover);
+      background: var(--teal-light);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .question-snippet {
+      background: #1E293B;
+      color: #38BDF8;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-family: Consolas, monospace;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-subtle);
+      background: var(--bg-cream);
+      font-size: 0.93rem;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--transition-fast);
+    }
+
+    .option-btn:hover {
+      background: var(--bg-surface);
+      border-color: var(--teal-primary);
+    }
+
+    .option-btn.selected {
+      border-color: var(--teal-primary);
+      background: var(--teal-light);
+      color: var(--teal-active);
+      font-weight: 600;
+    }
+
+    .option-marker {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .quiz-nav-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Quiz Results View */
+    .results-hero {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .score-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--teal-primary), var(--blue-accent));
+      color: #fff;
+      box-shadow: 0 6px 16px var(--teal-glow);
+    }
+
+    .score-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .gap-analysis-section {
+      margin-top: 24px;
+    }
+
+    .gap-card {
+      background: var(--color-warning-bg);
+      border: 1px solid #FDE68A;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .gap-card.mastered {
+      background: var(--color-success-bg);
+      border-color: #A7F3D0;
+    }
+
+    .gap-icon {
+      font-size: 1.3rem;
+      margin-top: 2px;
+    }
+
+    .gap-content h5 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .gap-content p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .prereq-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .recovery-plan-box {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .recovery-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--blue-accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ====================================================================
+       7. VIEW 4: VISUAL LEARNING TREE
+       ==================================================================== */
+    .tree-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      font-size: 0.82rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .tree-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+    }
+
+    .tree-track-row {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .track-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--teal-hover);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nodes-flow {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 10px 4px;
+    }
+
+    .tree-node {
+      min-width: 170px;
+      background: var(--bg-cream);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .tree-node:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--teal-primary);
+    }
+
+    .tree-node.mastered {
+      border-color: var(--color-success);
+      background: var(--color-success-bg);
+    }
+
+    .tree-node.gap-flagged {
+      border-color: var(--color-danger);
+      background: var(--color-danger-bg);
+      animation: pulseBorder 1.5s infinite;
+    }
+
+    @keyframes pulseBorder {
+      0%, 100% { border-color: var(--color-danger); }
+      50% { border-color: #F87171; }
+    }
+
+    .tree-node.unlocked {
+      border-color: var(--teal-primary);
+      background: var(--teal-light);
+    }
+
+    .node-status-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .tree-node.mastered .node-status-badge { background: #10B981; color: #fff; }
+    .tree-node.gap-flagged .node-status-badge { background: #EF4444; color: #fff; }
+    .tree-node.unlocked .node-status-badge { background: #0D9488; color: #fff; }
+
+    .node-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .node-prereq {
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+
+    .tree-arrow {
+      color: var(--border-subtle);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    /* Modal for Concept details */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      max-width: 580px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    /* ====================================================================
+       8. VIEW 5: PRACTICE & INTERACTIVE CODE SANDBOX
+       ==================================================================== */
+    .practice-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .practice-tab-btn {
+      padding: 10px 18px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .practice-tab-btn.active {
+      color: var(--teal-primary);
+      border-bottom-color: var(--teal-primary);
+    }
+
+    /* Split Editor */
+    .sandbox-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 480px;
+    }
+
+    .editor-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .editor-label-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .code-area {
+      width: 100%;
+      height: 140px;
+      background: #0F172A;
+      color: #F8FAFC;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.85rem;
+      border: 1px solid #334155;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .preview-pane {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      background: var(--bg-sidebar);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sandbox-preview-iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
+      background: #FFFFFF;
+      min-height: 380px;
+    }
+
+    /* Flashcards */
+    .flashcards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .flashcard {
+      perspective: 1000px;
+      height: 220px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: var(--radius-lg);
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .flashcard-front {
+      background: var(--bg-surface);
+      color: var(--text-main);
+    }
+
+    .flashcard-back {
+      background: linear-gradient(135deg, var(--teal-hover), var(--teal-primary));
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    /* ====================================================================
+       9. VIEW 6: PROGRESS TRACKING
+       ==================================================================== */
+    .progress-stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .badge-collection {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .badge-card {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      transition: all var(--transition-fast);
+    }
+
+    .badge-card.unlocked {
+      background: var(--teal-light);
+      border-color: var(--teal-primary);
+    }
+
+    .badge-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .badge-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .badge-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ====================================================================
+       10. VIEW 7: TEACHER DASHBOARD (DEMO CLASSROOM ANALYTICS)
+       ==================================================================== */
+    .demo-watermark {
+      background: #FEF3C7;
+      border: 1px solid #F59E0B;
+      color: #92400E;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+
+    .data-table th, .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .data-table th {
+      background: var(--bg-sidebar);
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .data-table tr:hover {
+      background: var(--bg-cream);
+    }
+
+    .gap-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .gap-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .gap-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .gap-bar-track {
+      height: 10px;
+      background: var(--bg-accent-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .gap-bar-fill {
+      height: 100%;
+      background: var(--coral-danger, #EF4444);
+      border-radius: var(--radius-full);
+    }
+
+    /* ====================================================================
+       11. TOAST NOTIFICATIONS & UTILITY
+       ==================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--text-main);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.25s ease-out;
+      max-width: 380px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 95;
+    }
+
+    /* ====================================================================
+       12. RESPONSIVE DESIGN (MEDIA QUERIES)
+       ==================================================================== */
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+      .main-wrapper {
+        margin-left: 0;
+      }
+      .mobile-menu-toggle {
+        display: block;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .sandbox-container {
+        grid-template-columns: 1fr;
+      }
+      .chat-msg {
+        max-width: 92%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-content {
+        padding: 14px;
+      }
+      .hero-banner {
+        padding: 20px;
+      }
+      .hero-banner h3 {
+        font-size: 1.4rem;
+      }
+      .quick-chips-wrap {
+        display: none; /* Hide quick chips on very small screens to give room */
+      }
+      .app-header {
+        padding: 0 14px;
+      }
+      .chat-header {
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ====================================================================
+       APP CONTAINER
+       ==================================================================== -->
+  <div id="app-container">
+
+    <!-- Mobile Drawer Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar(false)"></div>
+
+    <!-- ====================================================================
+         A. SIDEBAR NAVIGATION
+         ==================================================================== -->
+    <aside class="sidebar" id="app-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <div class="brand-icon">EB</div>
+        <div class="brand-titles">
+          <h1>EduBridge AI</h1>
+          <span>Campus Buddy</span>
+        </div>
+      </div>
+
+      <ul class="nav-list" role="menubar">
+        <li role="none">
+          <button class="nav-item-btn active" data-view="dashboard" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span class="nav-label" data-i18n="navDashboard">Dashboard</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="chat" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <span class="nav-label" data-i18n="navChat">AI Tutor</span>
+            <span class="nav-badge" data-i18n="badgeTutor">24/7</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="diagnose" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="nav-label" data-i18n="navDiagnose">Diagnose Gaps</span>
+            <span class="nav-badge" id="quiz-badge">Quiz</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="learning-tree" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16M9 11v6m6-6v6"/></svg>
+            <span class="nav-label" data-i18n="navTree">Learning Tree</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="practice" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span class="nav-label" data-i18n="navPractice">Practice & Code</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="progress" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span class="nav-label" data-i18n="navProgress">My Progress</span>
+          </button>
+        </li>
+        <li role="none">
+          <button class="nav-item-btn" data-view="teacher" role="menuitem">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span class="nav-label" data-i18n="navTeacher">Teacher Portal</span>
+            <span class="nav-badge" style="background: #FEF3C7; color: #92400E;">Demo</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="user-avatar-initial">S</div>
+          <div>
+            <div style="font-weight:700; color:var(--text-main); font-size:0.83rem;" id="user-display-name">Student Learner</div>
+            <div style="font-size:0.72rem; color:var(--teal-primary);" id="user-streak-text">🔥 3 Day Streak</div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Version 1.0 (Offline)</span>
+          <button onclick="resetAllData()" style="background:transparent; border:none; color:var(--color-danger); cursor:pointer; font-size:0.72rem; font-weight:600;">Reset Data</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         B. MAIN APPLICATION WRAPPER
+         ==================================================================== -->
+    <div class="main-wrapper">
+
+      <!-- TOP HEADER BAR -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileSidebar(true)">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="view-title-wrap">
+            <h2 id="current-view-title">Dashboard</h2>
+            <p id="current-view-desc">Campus learning workspace and AI mentor</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Accessibility Font Size Adjuster -->
+          <div class="font-size-controls" title="Adjust text size for readability">
+            <button class="font-btn" onclick="setFontScale('90%')">A-</button>
+            <button class="font-btn active" onclick="setFontScale('100%')">A</button>
+            <button class="font-btn" onclick="setFontScale('115%')">A+</button>
+          </div>
+
+          <!-- Multilingual Selector -->
+          <div class="lang-select-wrap">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+            <select class="lang-select" id="lang-selector" onchange="changeLanguage(this.value)" aria-label="Select Language">
+              <option value="en">English</option>
+              <option value="te">తెలుగు (Telugu)</option>
+              <option value="hi">हिंदी (Hindi)</option>
+            </select>
+          </div>
+
+          <!-- Offline/Online Indicator -->
+          <div class="offline-badge" id="network-status-badge">
+            <span class="status-dot"></span>
+            <span id="network-status-text">Local Ready</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE MAIN CONTENT -->
+      <main class="page-content">
+
+        <!-- ==============================================================
+             VIEW 1: DASHBOARD
+             ============================================================== -->
+        <section id="view-dashboard" class="view-pane active">
+          <!-- Hero Banner -->
+          <div class="hero-banner">
+            <span class="hero-tag" data-i18n="heroTag">Campus Peer & Project Partner</span>
+            <h3 data-i18n="heroHeading">Welcome to EduBridge AI! 🎓</h3>
+            <p data-i18n="heroSubtext">Master coding, overcome learning gaps, and build winning hackathons and college projects with friendly peer guidance.</p>
+            <div class="hero-actions">
+              <button class="btn-hero-primary" onclick="switchView('chat')">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                <span data-i18n="heroBtnChat">Ask AI Tutor</span>
+              </button>
+              <button class="btn-hero-secondary" onclick="switchView('diagnose')">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span data-i18n="heroBtnDiagnose">Detect Learning Gaps</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Stats Row -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon teal">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-streak">3 Days</div>
+                <div class="stat-label" data-i18n="statStreak">Daily Study Streak</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-score">Not Taken</div>
+                <div class="stat-label" data-i18n="statScore">Diagnostic Score</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon warning">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-gaps">0 Gaps</div>
+                <div class="stat-label" data-i18n="statGaps">Identified Gaps</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon success">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-mastered">4 / 12</div>
+                <div class="stat-label" data-i18n="statMastered">Concepts Mastered</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Split Grid -->
+          <div class="dashboard-grid">
+            <div class="left-col">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <span data-i18n="quickLaunchTitle">Quick Learning Portals</span>
+                  </h3>
+                  <span class="pill pill-teal" data-i18n="readyBadge">All Modules Ready</span>
+                </div>
+
+                <div class="quick-launch-grid">
+                  <div class="quick-card" onclick="switchView('chat')">
+                    <h4>🤖 <span data-i18n="cardChatTitle">AI Peer Tutor</span></h4>
+                    <p data-i18n="cardChatDesc">Chat in English, Telugu, or Hindi. Ask about HTML, CSS, JS, Python, Git & hackathons.</p>
+                  </div>
+
+                  <div class="quick-card" onclick="switchView('diagnose')">
+                    <h4>🎯 <span data-i18n="cardDiagTitle">Gap Detector</span></h4>
+                    <p data-i18n="cardDiagDesc">Take a 5-minute diagnostic test to discover prerequisite gaps holding you back.</p>
+                  </div>
+
+                  <div class="quick-card" onclick="switchView('learning-tree')">
+                    <h4>🌳 <span data-i18n="cardTreeTitle">Learning Tree</span></h4>
+                    <p data-i18n="cardTreeDesc">Explore visual prerequisite relationships between web concepts and projects.</p>
+                  </div>
+
+                  <div class="quick-card" onclick="switchView('practice')">
+                    <h4>💻 <span data-i18n="cardSandboxTitle">Live Code Runner</span></h4>
+                    <p data-i18n="cardSandboxDesc">Experiment with HTML, CSS & JavaScript in a safe browser playground.</p>
+                  </div>
+                </div>
+
+                <div class="tip-box" id="dashboard-daily-tip">
+                  💡 <strong>College Pro-Tip:</strong> When preparing for your first hackathon, focus on building an <em>MVP (Minimum Viable Product)</em> that solves one clear problem rather than trying to build a huge complicated app.
+                </div>
+              </div>
+
+              <!-- Recovery / Next Steps Card -->
+              <div class="card" id="dash-recovery-card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    <span data-i18n="nextStepsTitle">Personalised Recovery Recommendation</span>
+                  </h3>
+                </div>
+                <div id="dash-recovery-content">
+                  <p style="color:var(--text-muted); font-size:0.9rem;">You haven't completed the diagnostic assessment yet. Take the 10-question quiz to receive personalized lesson suggestions and an interactive recovery plan!</p>
+                  <button class="btn btn-teal" style="margin-top:14px;" onclick="switchView('diagnose')">
+                    Start 5-Minute Quiz →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Recent Activity & Quick Guidance -->
+            <div class="right-col">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title" style="font-size:1.05rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span data-i18n="recentActivity">Recent Activity</span>
+                  </h3>
+                </div>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; font-size:0.83rem;" id="recent-activity-list">
+                  <li style="display:flex; gap:10px;">
+                    <span style="color:var(--teal-primary); font-weight:bold;">•</span>
+                    <div>
+                      <div style="font-weight:600; color:var(--text-main);">Welcome to Campus Buddy!</div>
+                      <div style="color:var(--text-light); font-size:0.75rem;">Workspace initialized</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="card" style="background:var(--bg-accent-subtle);">
+                <h4 style="font-size:0.95rem; margin-bottom:8px; color:var(--text-main);">🌟 Hackathon Ready?</h4>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Need project ideas for Smart India Hackathon or college tech-fests? Our AI tutor has 15+ curated beginner project architectures.</p>
+                <button class="btn btn-outline btn-sm" onclick="askTutorSpecific('What are the best hackathon project ideas for first-year CSE students?')">View Project Ideas</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 2: AI TUTOR CHATBOT
+             ============================================================== -->
+        <section id="view-chat" class="view-pane">
+          <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+              <div class="chat-bot-info">
+                <div class="bot-avatar-badge">🤖</div>
+                <div class="bot-title-text">
+                  <h4>
+                    EduBridge Campus Buddy
+                    <span class="bot-status-tag" id="chat-mode-tag">Demo Offline Engine</span>
+                  </h4>
+                  <p style="font-size:0.75rem; color:var(--text-muted);" data-i18n="chatSubtitle">Keyword-based concept explainer & mentor</p>
+                </div>
+              </div>
+
+              <div class="chat-header-actions">
+                <button class="btn btn-secondary btn-sm" onclick="toggleTtsSpeech()" id="tts-toggle-btn" title="Toggle audio pronunciation">
+                  🔊 Sound: On
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="clearChatHistory()" title="Clear chat window">
+                  🗑️ Clear
+                </button>
+              </div>
+            </div>
+
+            <!-- Demo Content Disclosure -->
+            <div class="disclaimer-banner">
+              <span>ℹ️ <strong>Demo Notice:</strong> Responses are generated locally via offline keyword matching & educational rule bases. No external cloud AI is used.</span>
+              <button onclick="this.parentElement.style.display='none'" style="background:none; border:none; cursor:pointer; color:#92400E; font-weight:bold;">✕</button>
+            </div>
+
+            <!-- Chat Message Scroll Area -->
+            <div class="chat-messages" id="chat-messages-box">
+              <!-- Welcome Bot Message -->
+              <div class="chat-msg bot">
+                <div class="msg-avatar">EB</div>
+                <div class="msg-bubble">
+                  <div class="msg-content">
+                    Hello! I'm <strong>EduBridge Campus Buddy</strong> 👋. I'm here to help you understand tough programming concepts, guide you through hackathons, and help pick college projects.<br><br>
+                    You can ask me questions in <strong>English</strong>, <strong>తెలుగు (Telugu)</strong>, or <strong>हिंदी (Hindi)</strong>. Try clicking one of the sample prompt chips below or type your question!
+                  </div>
+                  <span class="msg-time" id="welcome-msg-time">Just now</span>
+                  <div class="msg-actions">
+                    <button class="msg-action-btn" onclick="speakMessageText(this)">🔊 Read aloud</button>
+                    <button class="msg-action-btn" onclick="copyMessageText(this)">📋 Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="chat-typing-indicator" style="margin-left: 20px;">
+              <span>Campus Buddy is thinking</span>
+              <div class="typing-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
+
+            <!-- Quick Question Chips -->
+            <div class="quick-chips-wrap">
+              <button class="quick-chip" onclick="handleQuickChip('What is HTML and semantic tags?')">🌐 HTML Semantics</button>
+              <button class="quick-chip" onclick="handleQuickChip('Explain CSS Box Model simply')">📦 CSS Box Model</button>
+              <button class="quick-chip" onclick="handleQuickChip('Explain JavaScript Promises and async await')">⚡ JS Async/Await</button>
+              <button class="quick-chip" onclick="handleQuickChip('Difference between Python list and tuple')">🐍 Python List vs Tuple</button>
+              <button class="quick-chip" onclick="handleQuickChip('How to use Git commit and push?')">🐙 Git & GitHub</button>
+              <button class="quick-chip" onclick="handleQuickChip('How to win my first college hackathon?')">🏆 Hackathon Strategy</button>
+              <button class="quick-chip" onclick="handleQuickChip('Give me beginner college project ideas')">💡 College Projects</button>
+              <button class="quick-chip" onclick="handleQuickChip('HTML అంటే ఏమిటి?')">తెలుగు: HTML అంటే ఏమిటి?</button>
+              <button class="quick-chip" onclick="handleQuickChip('Python क्या है और कैसे सीखें?')">हिंदी: Python क्या है?</button>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <form class="chat-input-bar" id="chat-form" onsubmit="handleChatSubmit(event)">
+              <div class="input-field-wrap">
+                <input type="text" id="chat-input-text" class="chat-input" placeholder="Ask a question about HTML, CSS, JS, Python, Git, or projects..." autocomplete="off">
+              </div>
+
+              <!-- Microphone Voice Input Button -->
+              <button type="button" class="mic-btn" id="voice-input-btn" onclick="toggleVoiceRecognition()" title="Speak your question using microphone" aria-label="Microphone input">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+              </button>
+
+              <!-- Send Button -->
+              <button type="submit" class="send-btn" id="chat-send-btn" title="Send question (Enter)" aria-label="Send message">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 3: DIAGNOSE (LEARNING GAP DETECTOR QUIZ)
+             ============================================================== -->
+        <section id="view-diagnose" class="view-pane">
+          <div class="quiz-container">
+
+            <!-- State A: Quiz Start / Intro Card -->
+            <div id="quiz-intro-card" class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span>Diagnostic Learning Gap Detector</span>
+                </h3>
+                <span class="pill pill-blue">10 Questions • ~5 Mins</span>
+              </div>
+              <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+                Most students struggle with advanced web development and hackathons not because they lack intelligence, but because they have <strong>missing prerequisite foundations</strong> (like the CSS Box Model, JavaScript asynchronous execution, or variable scoping).
+              </p>
+              <div style="background:var(--bg-accent-subtle); border-radius:var(--radius-md); padding:16px; margin-bottom:20px;">
+                <h4 style="font-size:0.9rem; margin-bottom:8px; color:var(--text-main);">What this diagnostic assesses:</h4>
+                <ul style="padding-left:20px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
+                  <li>HTML Structure & Semantic accessibility</li>
+                  <li>CSS Box Model (Margins, Padding, Border, Content) & Specificity</li>
+                  <li>JavaScript Scoping (`let` vs `const` vs `var`) & DOM Manipulation</li>
+                  <li>Asynchronous JavaScript (Promises & Fetch)</li>
+                  <li>Python Data Structures (Lists vs Tuples) & Control Flow</li>
+                  <li>Git version control fundamentals & Hackathon MVP planning</li>
+                </ul>
+              </div>
+              <button class="btn btn-teal" onclick="startDiagnosticQuiz()">
+                Start Diagnostic Assessment →
+              </button>
+            </div>
+
+            <!-- State B: Active Question View -->
+            <div id="quiz-active-card" class="question-card" style="display:none;">
+              <div class="quiz-meta-info">
+                <span id="quiz-question-number">Question 1 of 10</span>
+                <span class="question-tag" id="quiz-concept-tag">HTML Semantics</span>
+              </div>
+
+              <div class="quiz-progress-bar-wrap">
+                <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+              </div>
+
+              <h4 class="question-text" id="quiz-question-text">Question content goes here...</h4>
+
+              <div class="question-snippet" id="quiz-code-snippet" style="display:none;"></div>
+
+              <div class="options-grid" id="quiz-options-container">
+                <!-- Option buttons dynamically generated -->
+              </div>
+
+              <div class="quiz-nav-actions">
+                <button class="btn btn-secondary" id="quiz-prev-btn" onclick="prevQuizQuestion()" disabled>
+                  ← Previous
+                </button>
+                <button class="btn btn-teal" id="quiz-next-btn" onclick="nextQuizQuestion()">
+                  Next Question →
+                </button>
+              </div>
+            </div>
+
+            <!-- State C: Results & Learning Gap Analysis View -->
+            <div id="quiz-results-card" class="card" style="display:none;">
+              <div class="results-hero">
+                <div class="score-circle">
+                  <span class="score-number" id="results-score-value">80%</span>
+                  <span class="score-label" id="results-score-fraction">8 / 10</span>
+                </div>
+                <h3 style="font-size:1.4rem; font-weight:800; color:var(--text-main);" id="results-summary-title">Diagnostic Completed!</h3>
+                <p style="color:var(--text-muted); font-size:0.92rem; max-width:550px; margin:6px auto 0;" id="results-summary-desc">
+                  We analyzed your answers across 6 core competency areas to map your strengths and pinpoint hidden learning bottlenecks.
+                </p>
+              </div>
+
+              <!-- Gap Breakdown -->
+              <div class="gap-analysis-section">
+                <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                  <span>🔍 Learning Gap Analysis & Missing Prerequisites</span>
+                </h4>
+                <div id="results-gaps-list">
+                  <!-- Dynamically populated gap cards -->
+                </div>
+              </div>
+
+              <!-- Personalized Recovery Plan -->
+              <div class="recovery-plan-box" id="recovery-plan-container">
+                <h4 style="font-size:1rem; font-weight:700; color:var(--blue-dark); margin-bottom:8px;">
+                  🚀 Your Personalised 3-Step Recovery Plan
+                </h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Follow this sequence to solidify missing fundamentals before taking on complex projects:</p>
+                <div id="recovery-steps-list">
+                  <!-- Dynamically populated steps -->
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div style="display:flex; gap:12px; margin-top:24px; flex-wrap:wrap;">
+                <button class="btn btn-teal" onclick="switchView('learning-tree')">
+                  View in Learning Tree →
+                </button>
+                <button class="btn btn-blue" onclick="switchView('practice')">
+                  Open Practice Sandbox
+                </button>
+                <button class="btn btn-outline" onclick="retakeDiagnosticQuiz()">
+                  Retake Diagnostic
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 4: VISUAL LEARNING TREE
+             ============================================================== -->
+        <section id="view-learning-tree" class="view-pane">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16M9 11v6m6-6v6"/></svg>
+                  <span data-i18n="treeHeading">Curriculum Prerequisite Learning Tree</span>
+                </h3>
+                <p style="font-size:0.83rem; color:var(--text-muted);" data-i18n="treeSubheading">Interactive map showing how concepts build on each other and where gaps occur</p>
+              </div>
+              <div class="tree-legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#10B981;"></span> <span>Mastered</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:#EF4444;"></span> <span>Gap Flagged</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0D9488;"></span> <span>Ready to Learn</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9CA3AF;"></span> <span>Prerequisite Locked</span></div>
+              </div>
+            </div>
+
+            <!-- Visual Flow Layout -->
+            <div class="tree-layout">
+
+              <!-- Track 1: Web & UI Foundations -->
+              <div class="tree-track-row">
+                <div class="track-title">
+                  <span>Track 1: Web & User Interface Foundations</span>
+                </div>
+                <div class="nodes-flow">
+                  <div class="tree-node mastered" onclick="showNodeDetails('html-basics')">
+                    <span class="node-status-badge">Mastered</span>
+                    <div class="node-name">1. HTML5 Semantics</div>
+                    <div class="node-prereq">Prereq: None (Root)</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-css-box" onclick="showNodeDetails('css-box')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">2. CSS Box Model</div>
+                    <div class="node-prereq">Prereq: HTML Elements</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-css-flex" onclick="showNodeDetails('css-flex')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">3. Flexbox & Grid</div>
+                    <div class="node-prereq">Prereq: Box Model</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-responsive" onclick="showNodeDetails('responsive')">
+                    <span class="node-status-badge">Ready</span>
+                    <div class="node-name">4. Responsive UI</div>
+                    <div class="node-prereq">Prereq: Flexbox</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Track 2: Core Logic & Async Programming -->
+              <div class="tree-track-row">
+                <div class="track-title">
+                  <span>Track 2: Programming Logic & Asynchronous Execution</span>
+                </div>
+                <div class="nodes-flow">
+                  <div class="tree-node mastered" onclick="showNodeDetails('js-variables')">
+                    <span class="node-status-badge">Mastered</span>
+                    <div class="node-name">1. Scope & Variables</div>
+                    <div class="node-prereq">Prereq: Syntax basics</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-js-dom" onclick="showNodeDetails('js-dom')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">2. DOM Manipulation</div>
+                    <div class="node-prereq">Prereq: HTML + Scope</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-js-async" onclick="showNodeDetails('js-async')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">3. Async JS & Fetch</div>
+                    <div class="node-prereq">Prereq: Callbacks & Promises</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-python-ds" onclick="showNodeDetails('python-ds')">
+                    <span class="node-status-badge">Ready</span>
+                    <div class="node-name">4. Python Data Structures</div>
+                    <div class="node-prereq">Prereq: Basic Loops</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Track 3: Version Control, Hackathons & Capstones -->
+              <div class="tree-track-row">
+                <div class="track-title">
+                  <span>Track 3: Real-World Execution & Hackathons</span>
+                </div>
+                <div class="nodes-flow">
+                  <div class="tree-node" id="node-git-flow" onclick="showNodeDetails('git-flow')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">1. Git Version Control</div>
+                    <div class="node-prereq">Prereq: Terminal Basics</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-hackathon-mvp" onclick="showNodeDetails('hackathon-mvp')">
+                    <span class="node-status-badge">Check Quiz</span>
+                    <div class="node-name">2. Hackathon MVP Design</div>
+                    <div class="node-prereq">Prereq: Full Frontend / Scripting</div>
+                  </div>
+                  <div class="tree-arrow">➔</div>
+                  <div class="tree-node" id="node-capstone" onclick="showNodeDetails('capstone')">
+                    <span class="node-status-badge">Advanced</span>
+                    <div class="node-name">3. Final Year Capstone</div>
+                    <div class="node-prereq">Prereq: MVP + Git + APIs</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 5: PRACTICE & INTERACTIVE CODE SANDBOX
+             ============================================================== -->
+        <section id="view-practice" class="view-pane">
+          <!-- Practice Sub-navigation -->
+          <div class="practice-tabs">
+            <button class="practice-tab-btn active" onclick="switchPracticeTab('sandbox')">
+              💻 Live Code Runner
+            </button>
+            <button class="practice-tab-btn" onclick="switchPracticeTab('flashcards')">
+              🗂️ Concept Flashcards
+            </button>
+            <button class="practice-tab-btn" onclick="switchPracticeTab('challenges')">
+              🧩 Mini Challenges
+            </button>
+          </div>
+
+          <!-- TAB A: LIVE CODE RUNNER -->
+          <div id="practice-tab-sandbox">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">
+                    <span>Interactive HTML / CSS / JS Sandbox</span>
+                  </h3>
+                  <p style="font-size:0.83rem; color:var(--text-muted);">Write code and click 'Run Code' to execute instantly in a secure browser frame.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <select id="sandbox-template-select" onchange="loadSandboxTemplate(this.value)" class="lang-select" style="border:1px solid var(--border-subtle); border-radius:var(--radius-full); padding:6px 12px; background:var(--bg-surface);">
+                    <option value="counter">Template: Interactive Button Counter</option>
+                    <option value="flexbox">Template: Responsive Flexbox Card</option>
+                    <option value="todo">Template: Simple To-Do List</option>
+                  </select>
+                  <button class="btn btn-teal btn-sm" onclick="runSandboxCode()">
+                    ▶ Run Code
+                  </button>
+                </div>
+              </div>
+
+              <div class="sandbox-container">
+                <!-- Editor Pane -->
+                <div class="editor-pane">
+                  <div class="editor-label-bar">
+                    <span>HTML Content</span>
+                  </div>
+                  <textarea id="sandbox-html" class="code-area" spellcheck="false">&lt;div class="demo-card"&gt;
+  &lt;h2&gt;Hello Campus Learner! 🎓&lt;/h2&gt;
+  &lt;p&gt;Clicks recorded: &lt;span id="count"&gt;0&lt;/span&gt;&lt;/p&gt;
+  &lt;button id="btn"&gt;Click Me!&lt;/button&gt;
+&lt;/div&gt;</textarea>
+
+                  <div class="editor-label-bar">
+                    <span>CSS Styles</span>
+                  </div>
+                  <textarea id="sandbox-css" class="code-area" spellcheck="false">.demo-card {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #E6FFFA;
+  border: 2px solid #0D9488;
+  border-radius: 12px;
+  text-align: center;
+}
+button {
+  background: #0D9488;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}</textarea>
+
+                  <div class="editor-label-bar">
+                    <span>JavaScript</span>
+                  </div>
+                  <textarea id="sandbox-js" class="code-area" spellcheck="false">let count = 0;
+const btn = document.getElementById('btn');
+const countSpan = document.getElementById('count');
+
+btn.addEventListener('click', () => {
+  count++;
+  countSpan.textContent = count;
+});</textarea>
+                </div>
+
+                <!-- Live Preview Pane -->
+                <div class="preview-pane">
+                  <div class="preview-header">
+                    <span>Live Output Preview</span>
+                    <button class="btn btn-outline btn-sm" onclick="runSandboxCode()" style="padding:2px 8px; font-size:0.75rem;">Refresh</button>
+                  </div>
+                  <iframe id="sandbox-preview-frame" class="sandbox-preview-iframe" sandbox="allow-scripts" title="Code Output Preview"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB B: FLASHCARDS -->
+          <div id="practice-tab-flashcards" style="display:none;">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <span>Core Concept Recall Flashcards</span>
+                </h3>
+                <p style="font-size:0.83rem; color:var(--text-muted);">Click any card to flip it and test your understanding of tricky college viva questions!</p>
+              </div>
+
+              <div class="flashcards-grid">
+                <!-- Card 1 -->
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                  <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                      <span class="pill pill-teal" style="margin-bottom:12px;">CSS</span>
+                      <h4 style="font-size:1.1rem; color:var(--text-main);">What is the CSS Box Model order?</h4>
+                      <p style="font-size:0.75rem; color:var(--text-light); margin-top:12px;">Click to flip 🔄</p>
+                    </div>
+                    <div class="flashcard-back">
+                      <h4 style="font-size:1rem; margin-bottom:8px;">Inside to Outside:</h4>
+                      <p style="font-size:0.88rem; line-height:1.5;">1. Content (text/image)<br>2. Padding (inner spacing)<br>3. Border (frame line)<br>4. Margin (outer separation from others)</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                  <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                      <span class="pill pill-blue" style="margin-bottom:12px;">JavaScript</span>
+                      <h4 style="font-size:1.1rem; color:var(--text-main);">Difference between `==` and `===`?</h4>
+                      <p style="font-size:0.75rem; color:var(--text-light); margin-top:12px;">Click to flip 🔄</p>
+                    </div>
+                    <div class="flashcard-back">
+                      <h4 style="font-size:1rem; margin-bottom:8px;">Equality Comparison:</h4>
+                      <p style="font-size:0.85rem; line-height:1.4;"><code>==</code> compares values with <em>type coercion</em> (e.g. <code>5 == "5"</code> is true).<br><br><code>===</code> compares both <strong>value AND type</strong> strictly (e.g. <code>5 === "5"</code> is false).</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                  <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                      <span class="pill pill-warning" style="margin-bottom:12px;">Python</span>
+                      <h4 style="font-size:1.1rem; color:var(--text-main);">List vs. Tuple in Python?</h4>
+                      <p style="font-size:0.75rem; color:var(--text-light); margin-top:12px;">Click to flip 🔄</p>
+                    </div>
+                    <div class="flashcard-back">
+                      <h4 style="font-size:1rem; margin-bottom:8px;">Mutability:</h4>
+                      <p style="font-size:0.85rem; line-height:1.4;"><strong>List `[]`:</strong> Mutable (can add, remove, change items).<br><br><strong>Tuple `()`:</strong> Immutable (cannot be modified after creation, faster & safer for fixed data).</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                  <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                      <span class="pill pill-success" style="margin-bottom:12px;">Git</span>
+                      <h4 style="font-size:1.1rem; color:var(--text-main);">What does `git pull` do?</h4>
+                      <p style="font-size:0.75rem; color:var(--text-light); margin-top:12px;">Click to flip 🔄</p>
+                    </div>
+                    <div class="flashcard-back">
+                      <h4 style="font-size:1rem; margin-bottom:8px;">Fetch + Merge:</h4>
+                      <p style="font-size:0.88rem; line-height:1.5;">`git pull` fetches remote changes from GitHub and automatically merges them into your current local branch in one step.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB C: MINI CHALLENGES -->
+          <div id="practice-tab-challenges" style="display:none;">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <span>Interactive Code Puzzles</span>
+                </h3>
+              </div>
+
+              <!-- Challenge 1 -->
+              <div style="background:var(--bg-cream); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px; margin-bottom:16px;">
+                <span class="pill pill-teal">Challenge #1: Fix the CSS Centering</span>
+                <h4 style="font-size:1rem; margin:10px 0 6px;">How do you center a child element both vertically and horizontally in modern CSS?</h4>
+                <div style="margin:10px 0;">
+                  <button class="option-btn" onclick="checkChallengeAnswer(1, 0, this)">A) float: center; margin: auto;</button>
+                  <button class="option-btn" onclick="checkChallengeAnswer(1, 1, this)">B) display: flex; justify-content: center; align-items: center;</button>
+                  <button class="option-btn" onclick="checkChallengeAnswer(1, 2, this)">C) text-align: center; vertical-align: middle;</button>
+                </div>
+                <div id="challenge-1-feedback" style="font-size:0.85rem; font-weight:600; display:none; padding:8px 12px; border-radius:var(--radius-sm); margin-top:8px;"></div>
+              </div>
+
+              <!-- Challenge 2 -->
+              <div style="background:var(--bg-cream); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px;">
+                <span class="pill pill-blue">Challenge #2: Async Bug Catching</span>
+                <h4 style="font-size:1rem; margin:10px 0 6px;">What keyword must precede a function definition to allow the use of `await` inside it?</h4>
+                <div style="margin:10px 0;">
+                  <button class="option-btn" onclick="checkChallengeAnswer(2, 0, this)">A) promise</button>
+                  <button class="option-btn" onclick="checkChallengeAnswer(2, 1, this)">B) defer</button>
+                  <button class="option-btn" onclick="checkChallengeAnswer(2, 2, this)">C) async</button>
+                </div>
+                <div id="challenge-2-feedback" style="font-size:0.85rem; font-weight:600; display:none; padding:8px 12px; border-radius:var(--radius-sm); margin-top:8px;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 6: MY PROGRESS & ANALYTICS
+             ============================================================== -->
+        <section id="view-progress" class="view-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Student Mastery & Achievement Progress</span>
+              </h3>
+              <button class="btn btn-secondary btn-sm" onclick="exportStudentData()">📥 Export Progress (JSON)</button>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="progress-stats-overview">
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" id="prog-chat-count">1</div>
+                  <div class="stat-label">Tutor Questions Asked</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" id="prog-quiz-attempts">0</div>
+                  <div class="stat-label">Diagnostic Quizzes Taken</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" id="prog-best-score">--</div>
+                  <div class="stat-label">Diagnostic Accuracy</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" id="prog-badges-earned">1 / 5</div>
+                  <div class="stat-label">Badges Unlocked</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Achievement Badges -->
+            <h4 style="font-size:1.05rem; font-weight:700; margin:20px 0 10px; color:var(--text-main);">Earned Campus Badges</h4>
+            <div class="badge-collection">
+              <div class="badge-card unlocked" id="badge-first-chat">
+                <div class="badge-icon">💬</div>
+                <div class="badge-title">Curious Student</div>
+                <div class="badge-desc">Asked first question to Campus Buddy</div>
+              </div>
+              <div class="badge-card" id="badge-diagnostic">
+                <div class="badge-icon">🎯</div>
+                <div class="badge-title">Self-Aware Learner</div>
+                <div class="badge-desc">Completed diagnostic gap assessment</div>
+              </div>
+              <div class="badge-card" id="badge-code-runner">
+                <div class="badge-icon">⚡</div>
+                <div class="badge-title">Code Crafter</div>
+                <div class="badge-desc">Executed live sandbox code successfully</div>
+              </div>
+              <div class="badge-card" id="badge-multilingual">
+                <div class="badge-icon">🌐</div>
+                <div class="badge-title">Polyglot Scholar</div>
+                <div class="badge-desc">Explored explanations in Telugu or Hindi</div>
+              </div>
+              <div class="badge-card" id="badge-hackathon">
+                <div class="badge-icon">🏆</div>
+                <div class="badge-title">Hackathon Ready</div>
+                <div class="badge-desc">Mastered MVP & Git project fundamentals</div>
+              </div>
+            </div>
+
+            <!-- Learning Gap History -->
+            <h4 style="font-size:1.05rem; font-weight:700; margin:30px 0 10px; color:var(--text-main);">Identified Learning Gaps Status</h4>
+            <div id="progress-gaps-table-container">
+              <p style="font-size:0.88rem; color:var(--text-muted);">No gaps recorded yet. Complete the Diagnostic Quiz to generate your gap profile.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==============================================================
+             VIEW 7: TEACHER DASHBOARD (DEMO COHORT ANALYTICS)
+             ============================================================== -->
+        <section id="view-teacher" class="view-pane">
+          <div class="card">
+            <div class="demo-watermark">
+              <span>⚠️ <strong>Teacher Portal (Demo Mode):</strong> This dashboard displays simulated classroom data for a 42-student college batch to demonstrate educator analytics, common learning bottlenecks, and recommended interventions.</span>
+            </div>
+
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  <span>Classroom Learning Gap Analytics — CSE Section B</span>
+                </h3>
+                <p style="font-size:0.83rem; color:var(--text-muted);">Cohort diagnostic overview, common misunderstandings, and actionable lesson plans</p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="downloadTeacherDemoReport()">
+                📄 Download Cohort Report (CSV)
+              </button>
+            </div>
+
+            <!-- Teacher Summary Stats -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value">42</div>
+                  <div class="stat-label">Enrolled Students</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value">72.4%</div>
+                  <div class="stat-label">Average Diagnostic Score</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" style="color:#DC2626;">CSS Box Model</div>
+                  <div class="stat-label">Top Struggle Concept (64%)</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-value" style="color:var(--teal-primary);">11 Students</div>
+                  <div class="stat-label">Remedial Action Required</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concept Gap Distribution -->
+            <div style="background:var(--bg-cream); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px; margin-bottom:24px;">
+              <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:12px; color:var(--text-main);">Cohort Concept Failure Rate (Highest to Lowest)</h4>
+              <div class="gap-bar-wrap">
+                <div class="gap-bar-item">
+                  <div class="gap-bar-label"><span>CSS Box Model (Margins vs Padding)</span> <span>64% of cohort struggling</span></div>
+                  <div class="gap-bar-track"><div class="gap-bar-fill" style="width:64%;"></div></div>
+                </div>
+                <div class="gap-bar-item">
+                  <div class="gap-bar-label"><span>JavaScript Async Execution (Promises / Event Loop)</span> <span>52% of cohort struggling</span></div>
+                  <div class="gap-bar-track"><div class="gap-bar-fill" style="width:52%; background:#F59E0B;"></div></div>
+                </div>
+                <div class="gap-bar-item">
+                  <div class="gap-bar-label"><span>Git Branching & Merge Conflicts</span> <span>41% of cohort struggling</span></div>
+                  <div class="gap-bar-track"><div class="gap-bar-fill" style="width:41%; background:#F59E0B;"></div></div>
+                </div>
+                <div class="gap-bar-item">
+                  <div class="gap-bar-label"><span>Python Data Mutability (List vs Tuple)</span> <span>26% of cohort struggling</span></div>
+                  <div class="gap-bar-track"><div class="gap-bar-fill" style="width:26%; background:#10B981;"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Suggested Classroom Remedial Activities -->
+            <div class="card" style="border-left: 4px solid var(--blue-accent); background:var(--blue-light); margin-bottom:24px;">
+              <h4 style="font-size:1rem; font-weight:700; color:var(--blue-dark); margin-bottom:8px;">
+                💡 Suggested 15-Minute Classroom Interventions
+              </h4>
+              <ul style="padding-left:20px; font-size:0.86rem; color:var(--text-main); line-height:1.6;">
+                <li><strong>Activity 1 (CSS Box Model):</strong> Have students open Chrome DevTools on their favorite website, inspect elements, and colorize margins (orange) vs padding (green) to visually solve spacing confusion.</li>
+                <li><strong>Activity 2 (JS Async):</strong> Run a physical roleplay: One student acts as the "Call Stack", another as the "Web API timer", and a third as the "Callback Queue" to physically simulate asynchronous execution.</li>
+                <li><strong>Activity 3 (Hackathon Prep):</strong> Group students into 3-person squads and mandate creating an MVP with no more than 2 screens within a 45-minute lab session.</li>
+              </ul>
+            </div>
+
+            <!-- Student Cohort Table -->
+            <div class="card-header" style="margin-top:20px;">
+              <h4 style="font-size:1rem; font-weight:700;">Student Roster (Sample Cohort Data)</h4>
+              <input type="text" id="teacher-search-input" onkeyup="filterTeacherTable(this.value)" placeholder="Search student name or roll no..." style="padding:6px 12px; border-radius:var(--radius-full); border:1px solid var(--border-subtle); font-size:0.83rem;">
+            </div>
+
+            <div class="table-container">
+              <table class="data-table" id="teacher-students-table">
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Diagnostic Score</th>
+                    <th>Primary Identified Gap</th>
+                    <th>Status</th>
+                    <th>Suggested Intervention</th>
+                  </tr>
+                </thead>
+                <tbody id="teacher-table-body">
+                  <!-- Generated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       C. CONCEPT DETAIL MODAL (FOR LEARNING TREE)
+       ==================================================================== -->
+  <div class="modal-overlay" id="node-modal" onclick="closeModalOnOutsideClick(event)">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close-btn" onclick="closeNodeModal()" aria-label="Close modal">✕</button>
+      <div id="modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ====================================================================
+       D. JAVASCRIPT LOGIC & KNOWLEDGE BASE
+       Beginner-friendly, modular, well-commented vanilla JavaScript.
+       No external libraries, frameworks, or cloud dependencies.
+       ==================================================================== -->
+  <script>
+    /* ====================================================================
+       1. GLOBAL STATE & LOCAL STORAGE PERSISTENCE
+       ==================================================================== */
+    const STORAGE_KEY = 'edubridge_campus_buddy_state_v1';
+
+    // Default application state
+    const defaultState = {
+      user: {
+        name: 'Student Learner',
+        streak: 3,
+        lastActive: new Date().toISOString().split('T')[0],
+      },
+      currentLanguage: 'en', // 'en' | 'te' | 'hi'
+      ttsEnabled: true,
+      diagnostic: {
+        taken: false,
+        score: 0,
+        total: 10,
+        answers: {},
+        gapsDetected: [],
+        masteredConcepts: ['HTML5 Semantics', 'Scope & Variables']
+      },
+      badges: {
+        firstChat: true,
+        diagnostic: false,
+        codeRunner: false,
+        multilingual: false,
+        hackathon: false
+      },
+      chatStats: {
+        totalAsked: 1
+      },
+      chatHistory: []
+    };
+
+    // Load or initialize state from browser localStorage
+    let appState = (function loadInitialState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return { ...defaultState, ...parsed };
+        }
+      } catch (e) {
+        console.warn('Could not read localStorage:', e);
+      }
+      return { ...defaultState };
+    })();
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.warn('Could not save to localStorage:', e);
+      }
+    }
+
+    function resetAllData() {
+      if (confirm('Are you sure you want to reset all quiz progress, badges, and chat history?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        appState = { ...defaultState };
+        saveState();
+        showToast('All data has been reset to defaults.');
+        setTimeout(() => window.location.reload(), 400);
+      }
+    }
+
+    /* ====================================================================
+       2. MULTILINGUAL DICTIONARY (English, Telugu, Hindi)
+       ==================================================================== */
+    const i18nDict = {
+      en: {
+        navDashboard: "Dashboard",
+        navChat: "AI Tutor",
+        badgeTutor: "24/7",
+        navDiagnose: "Diagnose Gaps",
+        navTree: "Learning Tree",
+        navPractice: "Practice & Code",
+        navProgress: "My Progress",
+        navTeacher: "Teacher Portal",
+        heroTag: "Campus Peer & Project Partner",
+        heroHeading: "Welcome to EduBridge AI! 🎓",
+        heroSubtext: "Master coding, overcome learning gaps, and build winning hackathons and college projects with friendly peer guidance.",
+        heroBtnChat: "Ask AI Tutor",
+        heroBtnDiagnose: "Detect Learning Gaps",
+        statStreak: "Daily Study Streak",
+        statScore: "Diagnostic Score",
+        statGaps: "Identified Gaps",
+        statMastered: "Concepts Mastered",
+        quickLaunchTitle: "Quick Learning Portals",
+        readyBadge: "All Modules Ready",
+        cardChatTitle: "AI Peer Tutor",
+        cardChatDesc: "Chat in English, Telugu, or Hindi. Ask about HTML, CSS, JS, Python, Git & hackathons.",
+        cardDiagTitle: "Gap Detector",
+        cardDiagDesc: "Take a 5-minute diagnostic test to discover prerequisite gaps holding you back.",
+        cardTreeTitle: "Learning Tree",
+        cardTreeDesc: "Explore visual prerequisite relationships between web concepts and projects.",
+        cardSandboxTitle: "Live Code Runner",
+        cardSandboxDesc: "Experiment with HTML, CSS & JavaScript in a safe browser playground.",
+        nextStepsTitle: "Personalised Recovery Recommendation",
+        recentActivity: "Recent Activity",
+        chatSubtitle: "Keyword-based concept explainer & mentor",
+        chatPlaceholder: "Ask a question about HTML, CSS, JS, Python, Git, or projects...",
+        treeHeading: "Curriculum Prerequisite Learning Tree",
+        treeSubheading: "Interactive map showing how concepts build on each other and where gaps occur"
+      },
+      te: {
+        navDashboard: "డాష్‌బోర్డ్",
+        navChat: "AI ట్యూటర్",
+        badgeTutor: "24/7",
+        navDiagnose: "గ్యాప్ డిటెక్టర్",
+        navTree: "లెర్నింగ్ ట్రీ",
+        navPractice: "ప్రాక్టీస్ & కోడింగ్",
+        navProgress: "నా పురోగతి",
+        navTeacher: "టీచర్ పోర్టల్",
+        heroTag: "క్యాంపస్ మిత్రుడు & ప్రాజెక్ట్ గైడ్",
+        heroHeading: "ఎడ్యుబ్రిడ్జ్ AI కి స్వాగతం! 🎓",
+        heroSubtext: "కష్టమైన కోడింగ్ కాన్సెప్ట్‌లను సులభంగా నేర్చుకోండి, హ్యాకథాన్‌లు మరియు ప్రాజెక్ట్‌లను సులభంగా నిర్మించండి.",
+        heroBtnChat: "ట్యూటర్‌ని అడగండి",
+        heroBtnDiagnose: "లోపాలను గుర్తించండి",
+        statStreak: "స్టడీ స్ట్రీక్",
+        statScore: "పరీక్ష మార్కులు",
+        statGaps: "గుర్తించిన లోపాలు",
+        statMastered: "నేర్చుకున్న భావనలు",
+        quickLaunchTitle: "త్వరిత అభ్యాస విభాగాలు",
+        readyBadge: "సిద్ధంగా ఉంది",
+        cardChatTitle: "AI మిత్రుడు",
+        cardChatDesc: "తెలుగు, ఇంగ్లీష్ లేదా హిందీలో మాట్లాడండి. HTML, CSS, JS, Python మరియు Git అడగండి.",
+        cardDiagTitle: "గ్యాప్ డిటెక్టర్",
+        cardDiagDesc: "5 నిమిషాల క్విజ్ ద్వారా మీ పునాది లోపాలను వెంటనే గుర్తించండి.",
+        cardTreeTitle: "లెర్నింగ్ ట్రీ",
+        cardTreeDesc: "విషయాల మధ్య ఉన్న పరస్పర సంబంధాలను చిత్ర రూపంలో చూడండి.",
+        cardSandboxTitle: "లైవ్ కోడ్ రన్నర్",
+        cardSandboxDesc: "బ్రౌజర్‌లోనే నేరుగా HTML, CSS & JS కోడ్ రాసి వెంటనే అవుట్‌పుట్ చూడండి.",
+        nextStepsTitle: "వ్యక్తిగత అభ్యాస ప్రణాళిక",
+        recentActivity: "ఇటీవలి చర్యలు",
+        chatSubtitle: "కీవర్డ్ ఆధారిత వివరణాత్మక ట్యూటర్",
+        chatPlaceholder: "HTML, CSS, JS, Python, Git లేదా ప్రాజెక్ట్‌ల గురించి ఏదైనా అడగండి...",
+        treeHeading: "పాఠ్యాంశాల ముందస్తు లెర్నింగ్ ట్రీ",
+        treeSubheading: "కాన్సెప్ట్‌లు ఒకదానిపై ఒకటి ఎలా ఆధారపడి ఉన్నాయో చూపించే మ్యాప్"
+      },
+      hi: {
+        navDashboard: "डैशबोर्ड",
+        navChat: "AI ट्यूटर",
+        badgeTutor: "24/7",
+        navDiagnose: "लर्निंग गैप डिटेक्टर",
+        navTree: "लर्निंग ट्री",
+        navPractice: "प्रैक्टिस और कोड",
+        navProgress: "मेरी प्रगति",
+        navTeacher: "शिक्षक पोर्टल",
+        heroTag: "कैंपस मित्र और प्रोजेक्ट गाइड",
+        heroHeading: "EduBridge AI में आपका स्वागत है! 🎓",
+        heroSubtext: "कोडिंग की कठिन अवधारणाओं को आसानी से समझें, अपनी कमियों को दूर करें और कॉलेज प्रोजेक्ट्स बनाएं।",
+        heroBtnChat: "AI ट्यूटर से पूछें",
+        heroBtnDiagnose: "कमियों की पहचान करें",
+        statStreak: "दैनिक अध्ययन स्ट्रीक",
+        statScore: "डायग्नोस्टिक स्कोर",
+        statGaps: "पहचानी गई कमियां",
+        statMastered: "सीखी गई अवधारणाएं",
+        quickLaunchTitle: "त्वरित शिक्षण पोर्टल",
+        readyBadge: "सभी मॉड्यूल तैयार",
+        cardChatTitle: "AI पीयर ट्यूटर",
+        cardChatDesc: "अंग्रेजी, तेलुगु या हिंदी में पूछें। HTML, CSS, JS, Python और हैकाथॉन पर चर्चा करें।",
+        cardDiagTitle: "गैप डिटेक्टर",
+        cardDiagDesc: "5 मिनट की क्विज से अपनी बुनियादी कमियों को समझें।",
+        cardTreeTitle: "लर्निंग ट्री",
+        cardTreeDesc: "विज़ुअल लर्निंग ट्री के जरिए देखें कि कॉन्सेप्ट एक-दूसरे से कैसे जुड़े हैं।",
+        cardSandboxTitle: "लाइव कोड रनर",
+        cardSandboxDesc: "ब्राउज़र में सीधे HTML, CSS और JS चलाकर परिणाम देखें।",
+        nextStepsTitle: "व्यक्तिगत सुधार योजना",
+        recentActivity: "हाल की गतिविधियां",
+        chatSubtitle: "कीवर्ड आधारित ऑफ़लाइन व्याख्याता और मेंटर",
+        chatPlaceholder: "HTML, CSS, JS, Python, Git या प्रोजेक्ट्स के बारे में पूछें...",
+        treeHeading: "पाठ्यक्रम पूर्व-आवश्यकता लर्निंग ट्री",
+        treeSubheading: "इंटरएक्टिव मैप जो दिखाता है कि बुनियादी बातें कैसे जुड़ती हैं"
+      }
+    };
+
+    function changeLanguage(lang) {
+      if (!i18nDict[lang]) return;
+      appState.currentLanguage = lang;
+      saveState();
+
+      // Update dropdown selection
+      document.getElementById('lang-selector').value = lang;
+
+      // Update all data-i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18nDict[lang][key]) {
+          el.textContent = i18nDict[lang][key];
+        }
+      });
+
+      // Update input placeholder
+      const chatInput = document.getElementById('chat-input-text');
+      if (chatInput && i18nDict[lang].chatPlaceholder) {
+        chatInput.placeholder = i18nDict[lang].chatPlaceholder;
+      }
+
+      // Unlock multilingual badge if changed to te or hi
+      if (lang === 'te' || lang === 'hi') {
+        unlockBadge('multilingual');
+      }
+
+      showToast(`Language switched to ${lang === 'te' ? 'తెలుగు (Telugu)' : lang === 'hi' ? 'हिंदी (Hindi)' : 'English'}`);
+    }
+
+    /* ====================================================================
+       3. NAVIGATION & VIEW SWITCHER
+       ==================================================================== */
+    const viewsMeta = {
+      dashboard: { title: "Dashboard", desc: "Campus learning workspace and AI mentor" },
+      chat: { title: "AI Tutor Chatbot", desc: "Ask questions on Web Dev, Python, Git & Hackathons" },
+      diagnose: { title: "Learning Gap Detector", desc: "Diagnostic quiz to discover missing prerequisites" },
+      'learning-tree': { title: "Visual Learning Tree", desc: "Interactive prerequisite tree & concept maps" },
+      practice: { title: "Practice & Code Sandbox", desc: "Interactive editor, live runner & flashcards" },
+      progress: { title: "My Progress & Analytics", desc: "Track quiz scores, mastered concepts & badges" },
+      teacher: { title: "Teacher Dashboard", desc: "Demo classroom cohort analytics & interventions" }
+    };
+
+    function switchView(viewName) {
+      // Deactivate all view panes
+      document.querySelectorAll('.view-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+
+      // Deactivate all sidebar nav buttons
+      document.querySelectorAll('.nav-item-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Activate target view
+      const targetPane = document.getElementById(`view-${viewName}`);
+      if (targetPane) {
+        targetPane.classList.add('active');
+      }
+
+      // Activate corresponding nav button
+      const targetNavBtn = document.querySelector(`.nav-item-btn[data-view="${viewName}"]`);
+      if (targetNavBtn) {
+        targetNavBtn.classList.add('active');
+      }
+
+      // Update header titles
+      if (viewsMeta[viewName]) {
+        document.getElementById('current-view-title').textContent = viewsMeta[viewName].title;
+        document.getElementById('current-view-desc').textContent = viewsMeta[viewName].desc;
+      }
+
+      // Close mobile drawer if open
+      toggleMobileSidebar(false);
+
+      // Scroll to top
+      window.scrollTo(0, 0);
+
+      // Trigger view specific hooks
+      if (viewName === 'practice') {
+        runSandboxCode();
+      } else if (viewName === 'progress') {
+        renderProgressView();
+      } else if (viewName === 'teacher') {
+        renderTeacherCohort();
+      }
+    }
+
+    // Attach click listeners to nav items
+    document.querySelectorAll('.nav-item-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.getAttribute('data-view');
+        switchView(view);
+      });
+    });
+
+    function toggleMobileSidebar(open) {
+      const sidebar = document.getElementById('app-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (open) {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+      } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      }
+    }
+
+    // Accessibility font scale controls
+    function setFontScale(scale) {
+      document.documentElement.style.setProperty('--font-scale', scale);
+      document.querySelectorAll('.font-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(scale === '90%' ? 'A-' : scale === '115%' ? 'A+' : 'A')) {
+          btn.classList.add('active');
+        }
+      });
+      showToast(`Text size set to ${scale}`);
+    }
+
+    /* ====================================================================
+       4. OFFLINE & NETWORK MONITORING
+       ==================================================================== */
+    function updateNetworkStatus() {
+      const badge = document.getElementById('network-status-badge');
+      const label = document.getElementById('network-status-text');
+      if (navigator.onLine) {
+        badge.classList.remove('offline-mode');
+        label.textContent = "Local Ready";
+      } else {
+        badge.classList.add('offline-mode');
+        label.textContent = "Offline Mode (100% Functional)";
+      }
+    }
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus();
+
+    /* ====================================================================
+       5. AI TUTOR CHATBOT KNOWLEDGE BASE & INTENT ENGINE
+       Predefined Rule-Based Knowledge Engine (No paid APIs or backend needed)
+       Categorized answers in English, Telugu, and Hindi.
+       ==================================================================== */
+    const tutorKnowledgeBase = [
+      // 1. HTML BASICS & SEMANTICS
+      {
+        keywords: ['html', 'semantic', 'tags', 'element', 'head', 'body', 'div', 'span', 'doctype'],
+        title: "HTML5 Semantics & Structure",
+        response: {
+          en: `HTML (HyperText Markup Language) provides the structure for web pages.\n\nKey Concepts for College Students:\n• **Semantic Tags:** Use tags that describe their meaning to both the browser and developer (e.g., <header>, <nav>, <main>, <article>, <section>, <footer>) instead of just generic <div> tags.\n• **<div> vs <span>:** <div> is a block-level container (starts on a new line and takes full width), while <span> is an inline container (used inside paragraphs or text without breaking the line).\n• **Why it matters:** Better Google search ranking (SEO), screen reader accessibility for visually impaired users, and cleaner maintainable code!`,
+          te: `HTML (హైపర్‌టెక్స్ట్ మార్కప్ లాంగ్వేజ్) వెబ్ పేజీల యొక్క ప్రాథమిక నిర్మాణాన్ని (Skeleton) రూపొందిస్తుంది.\n\nముఖ్యమైన అంశాలు:\n• **సిమాంటిక్ ట్యాగ్‌లు:** కేవలం <div> బదులుగా <header>, <nav>, <main>, <footer> వంటి అర్థవంతమైన ట్యాగ్‌లను వాడాలి.\n• **<div> vs <span>:** <div> అనేది బ్లాక్-లెవెల్ ఎలిమెంట్ (కొత్త లైన్‌లో మొదలవుతుంది). <span> అనేది ఇన్‌లైన్ ఎలిమెంట్ (వాక్యం మధ్యలో వాడవచ్చు).\n• **లాభం:** వెబ్‌సైట్ శోధనలో త్వరగా కనిపించడం (SEO) మరియు స్క్రీన్ రీడర్‌లకు సౌలభ్యం.`,
+          hi: `HTML (हाइपरटेक्स्ट मार्कअप लैंग्वेज) वेब पेजों की संरचना (Structure) तैयार करता है।\n\nकॉलेज छात्रों के लिए महत्वपूर्ण बिंदु:\n• **सिमेंटिक टैग्स:** सामान्य <div> के बजाय <header>, <nav>, <article>, <footer> जैसे टैग्स का उपयोग करें जो अपने अर्थ को स्पष्ट करते हैं।\n• **<div> vs <span>:** <div> ब्लॉक-लेवल एलिमेंट है जो नई लाइन से शुरू होता है, जबकि <span> इनलाइन एलिमेंट है जो टेक्स्ट के बीच में इस्तेमाल होता है।\n• **फायदा:** सर्च इंजन रैंकिंग (SEO) और कोड को समझना आसान बनाता है!`
+        },
+        snippet: `<!-- Semantic HTML Example -->\n<header>\n  <nav><a href="#home">Home</a></nav>\n</header>\n<main>\n  <article>\n    <h2>My First Project</h2>\n    <p>Using semantic HTML tags!</p>\n  </article>\n</main>`
+      },
+
+      // 2. CSS BOX MODEL
+      {
+        keywords: ['box model', 'margin', 'padding', 'border', 'content', 'spacing', 'box-sizing'],
+        title: "CSS Box Model Explained",
+        response: {
+          en: `The CSS Box Model is the foundation of all web layout and spacing.\n\nEvery HTML element is treated as a rectangular box with 4 nested layers from inside out:\n1. **Content:** The actual text, image, or video inside.\n2. **Padding:** The transparent space INSIDE the border around the content.\n3. **Border:** The decorative line or boundary wrapping the padding and content.\n4. **Margin:** The transparent space OUTSIDE the border, pushing away neighboring elements.\n\n💡 Pro-Tip: Always add \`* { box-sizing: border-box; }\` in your CSS so padding does not accidentally expand your element's total width!`,
+          te: `CSS బాక్స్ మోడల్ అనేది వెబ్ లేఅవుట్ మరియు స్పేసింగ్‌కు అత్యంత ముఖ్యమైన పునాది.\n\nప్రతి HTML ఎలిమెంట్ 4 పొరలతో కూడిన ఒక పెట్టె (Box):\n1. **కంటెంట్ (Content):** అసలైన టెక్స్ట్ లేదా చిత్రం.\n2. **ప్యాడింగ్ (Padding):** కంటెంట్‌కి మరియు బోర్డర్‌కి మధ్య ఉండే లోపలి ఖాళీ స్థలం.\n3. **బోర్డర్ (Border):** ప్యాడింగ్ చుట్టూ ఉండే గీత.\n4. **మార్జిన్ (Margin):** ఇతర ఎలిమెంట్స్ నుండి దూరం ఉంచే బయటి ఖాళీ స్థలం.\n\n💡 చిట్కా: మీ CSSలో \`box-sizing: border-box;\` వాడటం వల్ల ప్యాడింగ్ సైజు మారదు!`,
+          hi: `CSS बॉक्स मॉडल वेब पेज लेआउट और स्पेसिंग की सबसे बुनियादी अवधारणा है।\n\nप्रत्येक HTML एलिमेंट एक बॉक्स की तरह होता है जिसके 4 स्तर होते हैं:\n1. **Content:** मुख्य टेक्स्ट या इमेज।\n2. **Padding:** कंटेंट और बॉर्डर के बीच की अंदरूनी खाली जगह।\n3. **Border:** पैडिंग के चारों ओर की रेखा।\n4. **Margin:** बॉर्डर के बाहर की खाली जगह जो अन्य तत्वों को दूर रखती है।\n\n💡 टिप: हमेशा \`box-sizing: border-box;\` का प्रयोग करें ताकि पैडिंग जोड़ने पर बॉक्स का कुल आकार न बढ़े!`
+        },
+        snippet: `/* Recommended CSS Reset */\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n.card {\n  padding: 16px;   /* Inside spacing */\n  border: 1px solid #0D9488;\n  margin: 20px;    /* Outside spacing */\n}`
+      },
+
+      // 3. CSS FLEXBOX & GRID
+      {
+        keywords: ['flexbox', 'flex', 'grid', 'align-items', 'justify-content', 'center', 'layout'],
+        title: "CSS Flexbox & Centering",
+        response: {
+          en: `CSS Flexbox (Flexible Box Layout) makes it super easy to align, distribute space, and center elements in a 1-dimensional row or column.\n\nHow to center anything perfectly in CSS:\n\`\`\`css\n.parent {\n  display: flex;\n  justify-content: center; /* Horizontally centers */\n  align-items: center;     /* Vertically centers */\n}\n\`\`\`\n• Use **Flexbox** when aligning items in a single direction (navbars, button groups, cards).\n• Use **CSS Grid** when you need a 2-dimensional layout with both rows and columns simultaneously (photo galleries, full page layouts).`,
+          te: `CSS ఫ్లెక్స్‌బాక్స్ (Flexbox) ఒక వరుసలో లేదా నిలువు వరుసలో ఎలిమెంట్స్‌ను సమానంగా అమర్చడానికి మరియు సెంటర్ చేయడానికి ఉపయోగపడుతుంది.\n\nసెంటర్ చేయడానికి సులభమైన మార్గం:\n\`display: flex;\` తో పాటు \`justify-content: center;\` మరియు \`align-items: center;\` ఇవ్వాలి.\n• ఒకే డైరెక్షన్‌లో ఉండే నావిగేషన్ లేదా బటన్ల కోసం **Flexbox** వాడండి.\n• నిలువు మరియు అడ్డ వరుసల కోసం **CSS Grid** వాడండి.`,
+          hi: `CSS फ्लेक्सबॉक्स (Flexbox) तत्वों को एक पंक्ति (Row) या कॉलम में व्यवस्थित और सेंटर करने का सबसे आधुनिक तरीका है।\n\nकिसी भी चीज़ को सेंटर करने का जादुई कोड:\n\`display: flex; justify-content: center; align-items: center;\`\n• एक दिशा (Row या Column) के लिए **Flexbox** का उपयोग करें।\n• दोनों दिशाओं (ग्रिड लेआउट, गैलरी) के लिए **CSS Grid** चुनें।`
+        },
+        snippet: `.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 10px 20px;\n}`
+      },
+
+      // 4. JAVASCRIPT VARIABLES & SCOPE
+      {
+        keywords: ['javascript', 'variable', 'let', 'const', 'var', 'scope', 'hoisting'],
+        title: "JavaScript: let vs const vs var",
+        response: {
+          en: `In modern JavaScript (ES6+), you should almost always use \`const\` and \`let\`.\n\nComparison:\n• **\`const\` (Default choice):** Block-scoped. Cannot be reassigned. Use this for 90% of variables (functions, objects, arrays, fixed values).\n• **\`let\`:** Block-scoped. Can be reassigned. Use only when the value must change (like loop counters, accumulators).\n• **\`var\` (Legacy):** Function-scoped and hoisted. Avoid using \`var\` in modern projects because it can lead to accidental bugs where variables leak outside \`if\` blocks or loops!`,
+          te: `ఆధునిక జావాస్క్రిప్ట్‌లో \`let\` మరియు \`const\` మాత్రమే వాడాలి. \`var\` ని వాడకపోవడమే మంచిది.\n\nతేడాలు:\n• **\`const\`:** బ్లాక్ స్కోప్. విలువను మార్చలేము. దాదాపు అన్ని వేరియబుల్స్‌కు దీనినే వాడండి.\n• **\`let\`:** బ్లాక్ స్కోప్. విలువను తర్వాత మార్చవచ్చు (లూప్‌లలో కౌంటర్‌లాగా).\n• **\`var\`:** పాత పద్ధతి. బగ్స్ వచ్చే అవకాశం ఎక్కువ.`,
+          hi: `आधुनिक जावास्क्रिप्ट (ES6+) में मुख्य रूप से \`const\` और \`let\` का उपयोग किया जाता है।\n\nअंतर:\n• **\`const\`:** ब्लॉक स्कोप्ड। इसका मान दोबारा बदला नहीं जा सकता। 90% कोड में इसका प्रयोग करें।\n• **\`let\`:** ब्लॉक स्कोप्ड। इसका मान बदला जा सकता है (लूप और काउंटर्स में उपयोगी)।\n• **\`var\`:** पुराना तरीका। इसका उपयोग न करें क्योंकि यह ब्लॉक के बाहर भी उपलब्ध रहता है जिससे गलतियां हो सकती हैं।`
+        },
+        snippet: `// Recommended Modern Practice\nconst appTitle = "Campus Buddy"; // Won't change\nlet score = 0;                   // Will change\nscore += 10;`
+      },
+
+      // 5. JAVASCRIPT ASYNC, PROMISES & FETCH
+      {
+        keywords: ['promise', 'async', 'await', 'fetch', 'api', 'asynchronous', 'callback'],
+        title: "JavaScript Promises & Async/Await",
+        response: {
+          en: `JavaScript is single-threaded, meaning it can only do one task at a time. To prevent long tasks (like downloading data from an API) from freezing the web page, JS uses **Asynchronous Execution**.\n\n• A **Promise** is an object representing the eventual completion (or failure) of an async operation.\n• **\`async/await\`** is clean syntax on top of Promises that lets you write asynchronous code that reads sequentially like synchronous code.\n• **Fetch API:** The browser's built-in tool for making HTTP network requests to get JSON data.`,
+          te: `జావాస్క్రిప్ట్ సింగిల్-థ్రెడెడ్ భాష. అంటే ఒకేసారి ఒక పని మాత్రమే చేస్తుంది. సర్వర్ నుండి డేటా తెచ్చేటప్పుడు పేజీ ఆగిపోకుండా ఉండటానికి **Asynchronous (అసింక్రోనస్)** పద్ధతిని వాడుతుంది.\n\n• **Promise:** భవిష్యత్తులో పూర్తి కాబోయే పనిని సూచిస్తుంది.\n• **async/await:** ప్రామిస్‌లను చాలా సులభంగా, చదవడానికి వీలుగా రాయడానికి ఉపయోగపడుతుంది.\n• **fetch():** ఇంటర్నెట్ నుండి API ద్వారా డేటాను తేవడానికి వాడే ఫంక్షన్.`,
+          hi: `जावास्क्रिप्ट सिंगल-थ्रेडेड है। सर्वर से डेटा लोड करते समय पेज हैंग न हो, इसलिए **Asynchronous Programming** का उपयोग होता है।\n\n• **Promise:** भविष्य में पूरा होने वाले काम का वादा है (Success या Error)।\n• **async/await:** प्रॉमिस को साधारण और आसानी से पढ़ने योग्य कोड में बदलने का तरीका है।\n• **fetch API:** किसी भी सर्वर या API से डेटा मंगाने का आधुनिक इन-बिल्ट तरीका है।`
+        },
+        snippet: `// Clean Async/Await Example\nasync function loadUserData() {\n  try {\n    const response = await fetch('https://api.example.com/student');\n    const data = await response.json();\n    console.log(data);\n  } catch (error) {\n    console.error("Failed to load:", error);\n  }\n}`
+      },
+
+      // 6. PYTHON BASICS (LIST VS TUPLE, FUNCTIONS)
+      {
+        keywords: ['python', 'list', 'tuple', 'dictionary', 'dict', 'indentation', 'def', 'mutable'],
+        title: "Python Fundamentals: Lists vs Tuples",
+        response: {
+          en: `Python is famous for its clean, readable syntax and indentation-based blocks.\n\nKey Concept: Mutability\n• **List \`[1, 2, 3]\`:** Mutable. You can append, delete, or modify elements at any time. Example: A shopping cart or list of registered students.\n• **Tuple \`(1, 2, 3)\`:** Immutable. Once created, items cannot be modified or replaced. Example: GPS coordinates (latitude, longitude) or RGB colors.\n• **Dictionary \`{"name": "Alice"}\`:** Key-value pairs for fast lookups.`,
+          te: `పైథాన్ చాలా సరళమైన మరియు స్పష్టమైన కోడింగ్ భాష.\n\nముఖ్యమైన తేడా (Mutability):\n• **List \`[]\`:** మ్యూటబుల్. మీరు అంశాలను ఎప్పుడైనా జోడించవచ్చు, తీసివేయవచ్చు లేదా మార్చవచ్చు.\n• **Tuple \`()\`:** ఇమ్మ్యూటబుల్. ఒక్కసారి సృష్టించిన తర్వాత మార్చలేము. ఫిక్స్‌డ్ డేటా (ఉదా: అక్షాంశాలు, రేఖాంశాలు) కి మంచిది.\n• **Dictionary \`{}\`:** కీ-వ్యాల్యూ జంటలు (ఉదా: రోల్ నెంబర్ మరియు విద్యార్థి పేరు).`,
+          hi: `पायथन अपनी सरल सिंटैक्स और इंडेंटेशन (इंडेंट) के लिए जानी जाती है।\n\nमहत्वपूर्ण अंतर:\n• **List \`[]\`:** Mutable है। इसमें आइटम को कभी भी जोड़ा, हटाया या बदला जा सकता है।\n• **Tuple \`()\`:** Immutable है। बनने के बाद इसमें कोई बदलाव नहीं किया जा सकता (सुरक्षित और तेज़)।\n• **Dictionary \`{}\`:** Key-Value के रूप में डेटा स्टोर करने के लिए प्रयोग होती है।`
+        },
+        snippet: `# Python Quick Reference\nfruits = ["apple", "banana"]  # List (mutable)\nfruits.append("orange")\n\npoint = (10, 20)              # Tuple (immutable)\nstudent = {"name": "Ravi", "year": 1} # Dictionary`
+      },
+
+      // 7. GIT & GITHUB
+      {
+        keywords: ['git', 'github', 'commit', 'push', 'pull', 'branch', 'merge', 'repo', 'repository'],
+        title: "Git & GitHub Essentials for Students",
+        response: {
+          en: `Git is a local version control software that records changes to your files over time. GitHub is a cloud hosting service for Git repositories.\n\nThe 5-Step Git Routine Every Student Needs:\n1. \`git init\` — Initialize a new Git repository in your folder.\n2. \`git status\` — Check which files have been modified.\n3. \`git add .\` — Stage modified files for commit.\n4. \`git commit -m "Describe your change"\` — Save a snapshot with a clear message.\n5. \`git push origin main\` — Upload your commits to GitHub.\n\n💡 Pro-Tip: Commit small changes frequently rather than one giant commit at 3 AM before project submission!`,
+          te: `Git అనేది మీ కోడ్ మార్పులను ట్రాక్ చేసే వర్షన్ కంట్రోల్ టూల్. GitHub అనేది ఆ కోడ్‌ను ఆన్‌లైన్‌లో భద్రపరిచే క్లౌడ్ వేదిక.\n\nముఖ్యమైన 5 కమాండ్‌లు:\n1. \`git init\` - కొత్త ప్రాజెక్ట్‌ను ప్రారంభించండి.\n2. \`git status\` - ఏ ఫైల్స్ మారాయో చూడండి.\n3. \`git add .\` - ఫైల్స్‌ను సేవ్ చేయడానికి సిద్ధం చేయండి.\n4. \`git commit -m "వివరణ"\` - మార్పును శాశ్వతంగా సేవ్ చేయండి.\n5. \`git push origin main\` - GitHub లోకి పంపండి.`,
+          hi: `Git आपके कंप्यूटर पर कोड में किए गए बदलावों का रिकॉर्ड रखता है। GitHub उसी कोड को ऑनलाइन स्टोर और टीम के साथ शेयर करने का मंच है।\n\nछात्रों के लिए 5 मुख्य कमांड्स:\n1. \`git init\` — नया रिपॉजिटरी बनाएं।\n2. \`git status\` — बदली गई फाइलों की जांच करें।\n3. \`git add .\` — फाइलों को स्टेज करें।\n4. \`git commit -m "मैसेज"\` — बदलावों को स्नैपशॉट के रूप में सुरक्षित करें।\n5. \`git push origin main\` — GitHub पर अपलोड करें।`
+        },
+        snippet: `# Essential Git Commands\ngit add .\ngit commit -m "feat: added login form validation"\ngit push origin main`
+      },
+
+      // 8. HACKATHONS
+      {
+        keywords: ['hackathon', 'pitch', 'mvp', 'win', 'team', 'first hackathon', 'ideas', 'presentation'],
+        title: "How to Ace Your First Hackathon",
+        response: {
+          en: `Hackathons are 24-36 hour team innovation sprints where you build a working prototype to solve a specific problem.\n\nWinning Blueprint for College Students:\n1. **Pick the Right Team:** 1 frontend dev + 1 backend/data dev + 1 presenter/designer.\n2. **Focus strictly on an MVP (Minimum Viable Product):** Judges care about 1 working core feature that works reliably during the demo, NOT 10 half-broken features.\n3. **Tell a Story in your Pitch (3 Minutes):** Problem (30s) ➔ Your Solution (30s) ➔ Live Demo (90s) ➔ Future Roadmap & Impact (30s).\n4. **Don't code till you drop:** Sleep at least 4 hours so your pitch team is energetic!`,
+          te: `హ్యాకథాన్‌లు అనేవి 24-36 గంటల్లో ఒక సమస్యకు సరికొత్త టెక్నాలజీతో పరిష్కారాన్ని రూపొందించే పోటీలు.\n\nగెలవడానికి చిట్కాలు:\n1. **సరైన బృందం:** డిజైన్, కోడింగ్ మరియు ప్రెజెంటేషన్ చేయగల 3-4 మంది సభ్యులను ఎంచుకోండి.\n2. **MVP (కనిష్ట ఆచరణీయ ఉత్పత్తి):** 10 అసంపూర్ణ ఫీచర్ల కంటే, స్పష్టంగా పనిచేసే ఒకే ఒక్క ముఖ్యమైన ఫీచర్‌ను చూపించండి.\n3. **ప్రెజెంటేషన్ ముఖ్యం:** ప్రాబ్లమ్, మీ సొల్యూషన్, లైవ్ డెమో మరియు భవిష్యత్ ప్రణాళికను 3 నిమిషాల్లో ఆకట్టుకునేలా చెప్పండి.`,
+          hi: `हैकाथॉन 24 से 36 घंटे की एक कोडिंग प्रतियोगिता होती है जिसमें टीम मिलकर किसी वास्तविक समस्या का प्रोटोटाइप बनाती है।\n\nजीतने का फॉर्मूला:\n1. **MVP (न्यूनतम व्यवहार्य उत्पाद) पर ध्यान दें:** 10 अधूरी सुविधाओं के बजाय 1 पूरी तरह काम करने वाली सुविधा दिखाएं।\n2. **मजबूत पिच (Pitch):** जजों को समस्या और आपका समाधान 3 मिनट में स्पष्ट समझाएं।\n3. **लाइव डेमो तैयार रखें:** स्क्रीनशॉट के बजाय चलता हुआ प्रोटोटाइप हमेशा ज्यादा अंक दिलाता है!`
+        },
+        snippet: `// Hackathon Pitch Structure\n1. Hook: "Did you know that 60% of students struggle with...?"\n2. Demo: Show the working core app (no slides, pure live app)\n3. Tech Stack: HTML5, CSS3, JavaScript, Python FastAPI\n4. Business Model & Scalability`
+      },
+
+      // 9. COLLEGE PROJECTS
+      {
+        keywords: ['project', 'college project', 'mini project', 'major project', 'capstone', 'viva', 'ideas'],
+        title: "College Project Ideas for CSE/IT Students",
+        response: {
+          en: `Here are 4 highly recommended project concepts that impress college professors and placement interviewers:\n\n1. **Campus Peer Tutoring & Learning Gap Tracker (EdTech):** Full-stack web app that diagnoses student prerequisite weaknesses using quizzes and tracks recovery.\n2. **Smart Attendance & Face Recognition System:** Python (OpenCV) with local SQLite database to automate classroom roll calls.\n3. **Campus Resource & Lab Equipment Sharing Portal:** Web app where students book 3D printers, lab slots, or library research books with QR codes.\n4. **Real-time Crowdsourced Campus Lost-and-Found:** Mobile-friendly web app with photo uploads, category tagging, and automated match notifications.\n\n💡 Pro-Tip for Viva: Always know your project's Database Schema and why you chose your specific tech stack over alternatives!`,
+          te: `కాలేజీ విద్యార్థుల కోసం కొన్ని అద్భుతమైన ప్రాజెక్ట్ ఐడియాలు:\n\n1. **క్యాంపస్ లెర్నింగ్ గ్యాప్ ట్రాకర్:** విద్యార్థుల బలహీనతలను గుర్తించి వ్యక్తిగత పాఠాలు సిఫార్సు చేసే వెబ్ పోర్టల్.\n2. **స్మార్ట్ అటెండెన్స్ సిస్టమ్:** పైథాన్ మరియు ఓపెన్‌సివి ఉపయోగించి విద్యార్థుల ముఖాన్ని గుర్తించే అటెండెన్స్ అప్లికేషన్.\n3. **క్యాంపస్ ల్యాబ్ & బుక్ బుకింగ్ పోర్టల్:** కాలేజీ పరికరాలు మరియు ల్యాబ్‌లను ఆన్‌లైన్‌లో బుక్ చేసుకునే వ్యవస్థ.\n4. **లాస్ట్ & ఫౌండ్ అసిస్టెంట్:** క్యాంపస్‌లో పోగొట్టుకున్న వస్తువులను వెతకడానికి ఫొటోలు మరియు అలర్ట్‌లతో కూడిన వెబ్‌సైట్.`,
+          hi: `कॉलेज वाइवा और प्लेसमेंट के लिए 4 बेहतरीन प्रोजेक्ट विचार:\n\n1. **कैंपस लर्निंग गैप ट्रैकर:** छात्रों की कमजोरियों को पहचान कर व्यक्तिगत सहायता देने वाला वेब पोर्टल।\n2. **स्मार्ट अटेंडेंस सिस्टम:** Python और OpenCV की मदद से चेहरे की पहचान करने वाला सॉफ्टवेयर।\n3. **कैंपस रिसोर्स शेयरिंग सिस्टम:** लैब उपकरण और किताबें ऑनलाइन बुक करने का पोर्टल।\n4. **लॉस्ट एंड फाउंड ट्रैकर:** खोई हुई वस्तुओं को खोजने के लिए फोटो टैगिंग वाला ऐप।\n\n💡 वाइवा टिप: हमेशा डेटाबेस आर्किटेक्चर और अपने कोड के हर फंक्शन का कारण समझें!`
+        },
+        snippet: `// Standard Capstone Architecture\nFrontend: HTML5, CSS3, Vanilla JS (or React)\nBackend: Python (FastAPI / Flask) or Node.js\nDatabase: SQLite (local) or PostgreSQL\nHosting: GitHub Pages & Render`
+      }
+    ];
+
+    // Default friendly response when no keywords match
+    const defaultBotReply = {
+      en: `I didn't quite find an exact match for that question, but here's how I can help you! 🎓\n\nTry asking me about:\n• **HTML & Web:** "What are semantic HTML tags?" or "Explain div vs span"\n• **CSS:** "Explain CSS Box Model" or "How to center with Flexbox?"\n• **JavaScript:** "Difference between let and const" or "Explain Async/Await"\n• **Python:** "Python list vs tuple" or "Python dictionaries"\n• **Git & GitHub:** "How to commit and push to GitHub?"\n• **Hackathons:** "How to win my first college hackathon?"\n• **Projects:** "Give me college project ideas for CSE students"`,
+      te: `క్షమించండి, మీ ప్రశ్నకు సరిపోయే ఖచ్చితమైన సమాధానం దొరకలేదు. కానీ నేను ఈ క్రింది విషయాలలో సహాయం చేయగలను! 🎓\n\nమీరు వీటి గురించి అడగవచ్చు:\n• **HTML & వెబ్:** "HTML అంటే ఏమిటి?" లేదా "Semantic tags అంటే ఏమిటి?"\n• **CSS:** "CSS బాక్స్ మోడల్ వివరించండి" లేదా "Flexbox ఎలా వాడాలి?"\n• **JavaScript:** "let మరియు const తేడా ఏమిటి?" లేదా "Async await వివరించండి"\n• **Python:** "List vs Tuple తేడాలు"\n• **Git:** "Git commit మరియు push ఎలా చేయాలి?"\n• **ప్రాజెక్ట్స్:** "కాలేజీ ప్రాజెక్ట్ ఐడియాలు చెప్పండి"`,
+      hi: `माफ़ करें, मुझे इस प्रश्न का सटीक उत्तर नहीं मिला। लेकिन मैं इन विषयों में आपकी पूरी सहायता कर सकता हूँ! 🎓\n\nआप मुझसे ये पूछ सकते हैं:\n• **HTML:** "HTML सिमेंटिक टैग्स क्या हैं?" या "div और span में अंतर"\n• **CSS:** "CSS बॉक्स मॉडल समझाइए" या "Flexbox से सेंटर कैसे करें?"\n• **JavaScript:** "let और const में क्या अंतर है?" या "Async Await क्या है?"\n• **Python:** "पायथन में List और Tuple में अंतर"\n• **Git:** "GitHub पर कोड कैसे पुश करें?"\n• **प्रोजेक्ट्स:** "कॉलेज मिनी प्रोजेक्ट के बेहतरीन विचार"`
+    };
+
+    /* Chat Matching Algorithm */
+    function findBestAnswer(query) {
+      const clean = query.toLowerCase().replace(/[^\w\s\u0C00-\u0C7F\u0900-\u097F]/gi, ' ');
+      const words = clean.split(/\s+/).filter(w => w.length > 1);
+
+      let bestScore = 0;
+      let bestItem = null;
+
+      for (const item of tutorKnowledgeBase) {
+        let score = 0;
+        for (const kw of item.keywords) {
+          if (clean.includes(kw)) {
+            score += 4;
+          }
+          for (const word of words) {
+            if (kw === word) score += 2;
+          }
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          bestItem = item;
+        }
+      }
+
+      const lang = appState.currentLanguage || 'en';
+
+      if (bestItem && bestScore >= 2) {
+        const text = bestItem.response[lang] || bestItem.response['en'];
+        return {
+          title: bestItem.title,
+          text: text,
+          snippet: bestItem.snippet || null,
+          matched: true
+        };
+      }
+
+      return {
+        title: "Campus Buddy Guidance",
+        text: defaultBotReply[lang] || defaultBotReply['en'],
+        snippet: null,
+        matched: false
+      };
+    }
+
+    /* Chat UI Handlers */
+    function handleChatSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('chat-input-text');
+      const text = input.value.trim();
+
+      if (!text) {
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
+        return;
+      }
+
+      // Add user message
+      addUserMessage(text);
+      input.value = '';
+
+      // Update stats
+      appState.chatStats.totalAsked = (appState.chatStats.totalAsked || 0) + 1;
+      saveState();
+
+      // Show typing indicator
+      const typingIndicator = document.getElementById('chat-typing-indicator');
+      typingIndicator.style.display = 'flex';
+
+      // Simulate human-like tutor response delay (450ms)
+      setTimeout(() => {
+        typingIndicator.style.display = 'none';
+        const answer = findBestAnswer(text);
+        addBotMessage(answer);
+
+        // Optional Text to Speech
+        if (appState.ttsEnabled) {
+          speakText(answer.text);
+        }
+      }, 450);
+    }
+
+    function handleQuickChip(promptText) {
+      document.getElementById('chat-input-text').value = promptText;
+      handleChatSubmit();
+    }
+
+    function askTutorSpecific(question) {
+      switchView('chat');
+      setTimeout(() => {
+        handleQuickChip(question);
+      }, 200);
+    }
+
+    function addUserMessage(text) {
+      const messagesBox = document.getElementById('chat-messages-box');
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg user';
+      msgDiv.innerHTML = `
+        <div class="msg-avatar">You</div>
+        <div class="msg-bubble">
+          <div class="msg-content">${escapeHTML(text)}</div>
+          <span class="msg-time">${now}</span>
+        </div>
+      `;
+      messagesBox.appendChild(msgDiv);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function addBotMessage(answer) {
+      const messagesBox = document.getElementById('chat-messages-box');
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let formattedText = escapeHTML(answer.text)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+
+      let snippetHtml = '';
+      if (answer.snippet) {
+        snippetHtml = `<pre class="msg-code-block"><code>${escapeHTML(answer.snippet)}</code></pre>`;
+      }
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg bot';
+      msgDiv.innerHTML = `
+        <div class="msg-avatar">EB</div>
+        <div class="msg-bubble">
+          <div class="msg-content">
+            ${formattedText}
+            ${snippetHtml}
+          </div>
+          <span class="msg-time">${now}</span>
+          <div class="msg-actions">
+            <button class="msg-action-btn" onclick="speakMessageText(this)" title="Read aloud">🔊 Listen</button>
+            <button class="msg-action-btn" onclick="copyMessageText(this)" title="Copy text">📋 Copy</button>
+          </div>
+        </div>
+      `;
+      messagesBox.appendChild(msgDiv);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function clearChatHistory() {
+      if (confirm('Clear the current chat window?')) {
+        const box = document.getElementById('chat-messages-box');
+        box.innerHTML = '';
+        addBotMessage({
+          title: "Fresh Session",
+          text: "Chat window cleared! What concept would you like to explore next?",
+          snippet: null,
+          matched: true
+        });
+      }
+    }
+
+    function copyMessageText(btn) {
+      const bubble = btn.closest('.msg-bubble');
+      const content = bubble.querySelector('.msg-content').innerText;
+      navigator.clipboard.writeText(content).then(() => {
+        showToast('Message copied to clipboard!');
+      }).catch(() => {
+        showToast('Copy failed. Please manually highlight text.');
+      });
+    }
+
+    function speakMessageText(btn) {
+      const bubble = btn.closest('.msg-bubble');
+      const text = bubble.querySelector('.msg-content').innerText;
+      speakText(text);
+    }
+
+    /* ====================================================================
+       6. VOICE FEATURES (MICROPHONE RECOGNITION & TEXT-TO-SPEECH)
+       With manual fallbacks when browser or permissions deny access.
+       ==================================================================== */
+    let speechRecognitionInstance = null;
+    let isListening = false;
+
+    function toggleVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const micBtn = document.getElementById('voice-input-btn');
+
+      if (!SpeechRecognition) {
+        showToast('Microphone speech recognition is not supported in this browser. Please type your question manually.');
+        return;
+      }
+
+      if (isListening) {
+        if (speechRecognitionInstance) speechRecognitionInstance.stop();
+        micBtn.classList.remove('listening');
+        isListening = false;
+        showToast('Microphone stopped.');
+        return;
+      }
+
+      try {
+        speechRecognitionInstance = new SpeechRecognition();
+        speechRecognitionInstance.continuous = false;
+        speechRecognitionInstance.interimResults = false;
+
+        // Set recognition language based on active choice
+        const lang = appState.currentLanguage || 'en';
+        if (lang === 'te') speechRecognitionInstance.lang = 'te-IN';
+        else if (lang === 'hi') speechRecognitionInstance.lang = 'hi-IN';
+        else speechRecognitionInstance.lang = 'en-US';
+
+        speechRecognitionInstance.onstart = () => {
+          isListening = true;
+          micBtn.classList.add('listening');
+          showToast('Listening... Speak now into your microphone.');
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById('chat-input-text').value = transcript;
+          micBtn.classList.remove('listening');
+          isListening = false;
+          showToast(`Captured: "${transcript}"`);
+          handleChatSubmit();
+        };
+
+        speechRecognitionInstance.onerror = (event) => {
+          console.warn('Speech recognition error:', event.error);
+          micBtn.classList.remove('listening');
+          isListening = false;
+          if (event.error === 'not-allowed') {
+            showToast('Microphone access denied. You can still type your questions!');
+          } else {
+            showToast('Could not hear clearly. Please try again or type manually.');
+          }
+        };
+
+        speechRecognitionInstance.onend = () => {
+          micBtn.classList.remove('listening');
+          isListening = false;
+        };
+
+        speechRecognitionInstance.start();
+      } catch (err) {
+        console.warn('Speech recognition failed to initialize:', err);
+        showToast('Microphone speech recognition unavailable. Please use the keyboard.');
+      }
+    }
+
+    function toggleTtsSpeech() {
+      appState.ttsEnabled = !appState.ttsEnabled;
+      const btn = document.getElementById('tts-toggle-btn');
+      if (appState.ttsEnabled) {
+        btn.textContent = "🔊 Sound: On";
+        btn.classList.remove('btn-outline');
+        btn.classList.add('btn-secondary');
+        showToast('Voice read-aloud enabled.');
+      } else {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        btn.textContent = "🔇 Sound: Off";
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-outline');
+        showToast('Voice read-aloud muted.');
+      }
+      saveState();
+    }
+
+    function speakText(rawText) {
+      if (!window.speechSynthesis || !appState.ttsEnabled) return;
+
+      window.speechSynthesis.cancel(); // Stop any previous ongoing speech
+
+      // Clean markdown tags for spoken output
+      const cleanText = rawText
+        .replace(/`[^`]+`/g, ' ')
+        .replace(/\*\*/g, '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/💡|•|👋|🤖|🎓|🚀|📦|⚡/g, '');
+
+      const utterance = new SpeechSynthesisUtterance(cleanText.substring(0, 350)); // Read first 350 chars
+      const lang = appState.currentLanguage || 'en';
+
+      if (lang === 'te') utterance.lang = 'te-IN';
+      else if (lang === 'hi') utterance.lang = 'hi-IN';
+      else utterance.lang = 'en-US';
+
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* ====================================================================
+       7. DIAGNOSTIC QUIZ & LEARNING GAP DETECTOR
+       10 high-yield questions analyzing mistakes by prerequisite concept.
+       ==================================================================== */
+    const diagnosticQuestions = [
+      {
+        id: 1,
+        concept: "HTML Semantics",
+        prereq: "Basic Web Document Structure",
+        question: "Why should developers use semantic HTML elements like <header>, <article>, and <nav> instead of generic <div> tags?",
+        code: null,
+        options: [
+          "It makes the page render 10x faster in all browsers",
+          "It improves SEO, accessibility for screen readers, and code readability",
+          "It is required by JavaScript to attach event listeners",
+          "It automatically applies CSS flexbox layout to child tags"
+        ],
+        correct: 1,
+        gapExplanation: "Confusion between visual layout and semantic meaning. Without semantic HTML, web crawlers and assistive screen readers cannot parse your page structure."
+      },
+      {
+        id: 2,
+        concept: "CSS Box Model",
+        prereq: "CSS Layout & Spacing",
+        question: "In the standard CSS Box Model, what is the exact difference between `margin` and `padding`?",
+        code: null,
+        options: [
+          "Margin is inside the border; padding is outside the border",
+          "Padding is inside the border around content; margin is outside the border pushing neighbors away",
+          "Margin only applies to text; padding applies to images",
+          "There is no difference; they are aliases for each other"
+        ],
+        correct: 1,
+        gapExplanation: "CSS Box Model spacing confusion. This is the #1 reason student layouts break or content unpredictably overlaps."
+      },
+      {
+        id: 3,
+        concept: "CSS Box Sizing",
+        prereq: "CSS Box Model",
+        question: "An element has `width: 200px; padding: 20px; border: 5px solid black;`. If `box-sizing: content-box` (default) is active, what is the element's actual rendered width?",
+        code: null,
+        options: [
+          "200px",
+          "225px",
+          "250px (200 + 40 padding + 10 border)",
+          "175px"
+        ],
+        correct: 2,
+        gapExplanation: "Missing understanding of box-sizing. With content-box, padding and borders increase total dimensions, causing unexpected layout overflowing."
+      },
+      {
+        id: 4,
+        concept: "Variable Scoping",
+        prereq: "JavaScript Syntax & Scope",
+        question: "What happens when you declare a variable with `const` in JavaScript?",
+        code: "const student = { name: 'Rahul' };\nstudent.name = 'Ravi';\nstudent = { name: 'Priya' };",
+        options: [
+          "Both reassignments fail with a TypeError",
+          "Modifying `student.name` succeeds, but reassigning `student = ...` throws a TypeError",
+          "Both operations succeed because JavaScript is weakly typed",
+          "`const` variables are hoisted to global scope"
+        ],
+        correct: 1,
+        gapExplanation: "Confusion between reference immutability and object mutation. `const` prevents reassignment of the variable binding, not the internal properties of objects."
+      },
+      {
+        id: 5,
+        concept: "DOM Manipulation",
+        prereq: "JavaScript Browser API",
+        question: "Which code properly attaches a click listener to a button with id 'submit-btn'?",
+        code: null,
+        options: [
+          "document.getElementById('submit-btn').onClick(handleClick);",
+          "document.querySelector('#submit-btn').addEventListener('click', handleClick);",
+          "document.find('#submit-btn').listen('click', handleClick);",
+          "window.attach('#submit-btn', 'click', handleClick);"
+        ],
+        correct: 1,
+        gapExplanation: "DOM Event Listener syntax gap. Using modern `addEventListener` prevents overriding other handlers and allows multiple listeners."
+      },
+      {
+        id: 6,
+        concept: "Asynchronous JavaScript",
+        prereq: "Promises & Event Loop",
+        question: "What is logged to the console first when this code runs?",
+        code: "console.log('1');\nsetTimeout(() => console.log('2'), 0);\nconsole.log('3');",
+        options: [
+          "1, then 2, then 3",
+          "1, then 3, then 2",
+          "2, then 1, then 3",
+          "3, then 2, then 1"
+        ],
+        correct: 1,
+        gapExplanation: "Event Loop and Asynchronous Queue misunderstanding. `setTimeout` callbacks are queued to the Macrotask queue and only run after synchronous code finishes."
+      },
+      {
+        id: 7,
+        concept: "Async / Await Error Handling",
+        prereq: "Asynchronous JavaScript",
+        question: "How should network errors and rejected promises be properly caught when using `async / await`?",
+        code: null,
+        options: [
+          "Using a standard `try { ... } catch (error) { ... }` block",
+          "Using an `if (!await fetch())` condition",
+          "Async functions cannot catch errors; they must crash the script",
+          "By adding a `fallback()` keyword to the function header"
+        ],
+        correct: 0,
+        gapExplanation: "Async error handling gap. Without try/catch around `await`, rejected network requests result in uncaught promise rejections."
+      },
+      {
+        id: 8,
+        concept: "Python Data Mutability",
+        prereq: "Python Data Structures",
+        question: "What is the primary architectural difference between a Python List `[]` and a Python Tuple `()`?",
+        code: null,
+        options: [
+          "Lists can only store numbers; Tuples store text",
+          "Lists are mutable (modifiable); Tuples are immutable (cannot be altered after creation)",
+          "Tuples use more memory than lists",
+          "Lists require a compiler; Tuples are interpreted"
+        ],
+        correct: 1,
+        gapExplanation: "Python mutability gap. Using lists when tuples are expected can cause accidental state mutations in functions and capstone scripts."
+      },
+      {
+        id: 9,
+        concept: "Git Version Control",
+        prereq: "Version Control Basics",
+        question: "What is the correct sequence of Git commands to stage all edited files, save a snapshot locally, and send it to your remote GitHub repository?",
+        code: null,
+        options: [
+          "git push -> git add -> git commit",
+          "git add . -> git commit -m 'message' -> git push",
+          "git commit -> git upload -> git init",
+          "git checkout -> git fetch -> git status"
+        ],
+        correct: 1,
+        gapExplanation: "Git staging and deployment pipeline gap. Missing `git add` causes commits to be empty or incomplete."
+      },
+      {
+        id: 10,
+        concept: "Hackathon MVP Planning",
+        prereq: "Project Scoping & Architecture",
+        question: "What is the most effective engineering strategy for a 24-hour college hackathon team?",
+        code: null,
+        options: [
+          "Spend 20 hours designing 15 database tables and finish coding in the last 2 hours",
+          "Build a focused Minimum Viable Product (MVP) with 1 rock-solid working core feature and a clear pitch",
+          "Refuse to build any prototype and present only slides with buzzwords",
+          "Build everything from scratch in pure C without using any high-level tools"
+        ],
+        correct: 1,
+        gapExplanation: "Hackathon scope creep. Trying to build an entire operating system in 24 hours leads to broken demos; a tight MVP wins prizes."
+      }
+    ];
+
+    let currentQuestionIdx = 0;
+    let quizSelectedAnswers = {};
+
+    function startDiagnosticQuiz() {
+      currentQuestionIdx = 0;
+      quizSelectedAnswers = {};
+      document.getElementById('quiz-intro-card').style.display = 'none';
+      document.getElementById('quiz-results-card').style.display = 'none';
+      document.getElementById('quiz-active-card').style.display = 'block';
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const q = diagnosticQuestions[currentQuestionIdx];
+      const total = diagnosticQuestions.length;
+
+      document.getElementById('quiz-question-number').textContent = `Question ${currentQuestionIdx + 1} of ${total}`;
+      document.getElementById('quiz-concept-tag').textContent = q.concept;
+      document.getElementById('quiz-question-text').textContent = q.question;
+
+      // Progress bar fill
+      const percent = Math.round(((currentQuestionIdx) / total) * 100);
+      document.getElementById('quiz-progress-fill').style.width = `${percent}%`;
+
+      // Code snippet display
+      const snippetBox = document.getElementById('quiz-code-snippet');
+      if (q.code) {
+        snippetBox.style.display = 'block';
+        snippetBox.textContent = q.code;
+      } else {
+        snippetBox.style.display = 'none';
+      }
+
+      // Render options
+      const container = document.getElementById('quiz-options-container');
+      container.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+      q.options.forEach((optText, idx) => {
+        const isSelected = quizSelectedAnswers[currentQuestionIdx] === idx;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `option-btn ${isSelected ? 'selected' : ''}`;
+        btn.onclick = () => selectQuizOption(idx);
+        btn.innerHTML = `
+          <span class="option-marker">${letters[idx]}</span>
+          <span>${escapeHTML(optText)}</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      // Navigation button labels
+      document.getElementById('quiz-prev-btn').disabled = (currentQuestionIdx === 0);
+      const nextBtn = document.getElementById('quiz-next-btn');
+      if (currentQuestionIdx === total - 1) {
+        nextBtn.textContent = "Finish & Analyze Gaps →";
+        nextBtn.className = "btn btn-blue";
+      } else {
+        nextBtn.textContent = "Next Question →";
+        nextBtn.className = "btn btn-teal";
+      }
+    }
+
+    function selectQuizOption(optionIdx) {
+      quizSelectedAnswers[currentQuestionIdx] = optionIdx;
+      renderQuizQuestion();
+    }
+
+    function prevQuizQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuizQuestion();
+      }
+    }
+
+    function nextQuizQuestion() {
+      // Validate that an option was chosen
+      if (quizSelectedAnswers[currentQuestionIdx] === undefined) {
+        showToast('Please select an option before moving to the next question.');
+        return;
+      }
+
+      if (currentQuestionIdx < diagnosticQuestions.length - 1) {
+        currentQuestionIdx++;
+        renderQuizQuestion();
+      } else {
+        finishDiagnosticQuiz();
+      }
+    }
+
+    function finishDiagnosticQuiz() {
+      let correctCount = 0;
+      const gaps = [];
+      const mastered = [];
+
+      diagnosticQuestions.forEach((q, idx) => {
+        const selected = quizSelectedAnswers[idx];
+        if (selected === q.correct) {
+          correctCount++;
+          if (!mastered.includes(q.concept)) mastered.push(q.concept);
+        } else {
+          gaps.push({
+            concept: q.concept,
+            prereq: q.prereq,
+            reason: q.gapExplanation
+          });
+        }
+      });
+
+      const percentage = Math.round((correctCount / diagnosticQuestions.length) * 100);
+
+      // Save to application state
+      appState.diagnostic.taken = true;
+      appState.diagnostic.score = percentage;
+      appState.diagnostic.answers = { ...quizSelectedAnswers };
+      appState.diagnostic.gapsDetected = gaps;
+      appState.diagnostic.masteredConcepts = mastered;
+      appState.badges.diagnostic = true;
+
+      // Update streaks and badges
+      unlockBadge('diagnostic');
+      saveState();
+
+      // Display results card
+      document.getElementById('quiz-active-card').style.display = 'none';
+      document.getElementById('quiz-results-card').style.display = 'block';
+
+      // Update score badges
+      document.getElementById('results-score-value').textContent = `${percentage}%`;
+      document.getElementById('results-score-fraction').textContent = `${correctCount} / 10`;
+
+      // Update dashboard stats
+      document.getElementById('dash-score').textContent = `${percentage}%`;
+      document.getElementById('dash-gaps').textContent = `${gaps.length} Gaps`;
+      document.getElementById('dash-mastered').textContent = `${mastered.length} / 12`;
+
+      // Render Gap Breakdown List
+      const gapsContainer = document.getElementById('results-gaps-list');
+      gapsContainer.innerHTML = '';
+
+      if (gaps.length === 0) {
+        gapsContainer.innerHTML = `
+          <div class="gap-card mastered">
+            <div class="gap-icon">🎉</div>
+            <div class="gap-content">
+              <h5>Outstanding Foundation Mastery!</h5>
+              <p>You scored 100% on the diagnostic. All core web, JavaScript, Python, Git, and MVP prerequisites are firmly locked in!</p>
+            </div>
+          </div>
+        `;
+      } else {
+        gaps.forEach(gap => {
+          const card = document.createElement('div');
+          card.className = 'gap-card';
+          card.innerHTML = `
+            <div class="gap-icon">⚠️</div>
+            <div class="gap-content">
+              <h5>Learning Gap: ${escapeHTML(gap.concept)}</h5>
+              <p>${escapeHTML(gap.reason)}</p>
+              <span class="prereq-badge">Missing Prerequisite: ${escapeHTML(gap.prereq)}</span>
+            </div>
+          `;
+          gapsContainer.appendChild(card);
+        });
+      }
+
+      // Render Personalized Recovery Plan
+      renderRecoveryPlan(gaps);
+
+      // Synchronize Visual Learning Tree nodes
+      updateLearningTreeStatuses(gaps, mastered);
+
+      showToast(`Diagnostic Complete! Score: ${percentage}%`);
+    }
+
+    function renderRecoveryPlan(gaps) {
+      const stepsContainer = document.getElementById('recovery-steps-list');
+      stepsContainer.innerHTML = '';
+
+      const dashRecoveryContent = document.getElementById('dash-recovery-content');
+
+      if (gaps.length === 0) {
+        stepsContainer.innerHTML = `
+          <div class="recovery-step">
+            <div class="step-num">✓</div>
+            <div>
+              <strong>Advance to Hackathon MVP Sprint:</strong>
+              <p style="font-size:0.83rem; color:var(--text-muted);">You're ready to build full-scale portfolio applications. Open the Live Code Runner or start your college capstone project!</p>
+            </div>
+          </div>
+        `;
+        dashRecoveryContent.innerHTML = `
+          <p style="color:var(--color-success); font-weight:bold;">🎉 All fundamentals mastered! Ready for advanced Hackathon & Capstone development.</p>
+          <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="switchView('practice')">Open Code Sandbox →</button>
+        `;
+        return;
+      }
+
+      // Build 3 personalized steps based on top gaps
+      const step1 = gaps[0];
+      const step2 = gaps.length > 1 ? gaps[1] : { concept: "Live Practice", prereq: "Hands-on coding" };
+
+      stepsContainer.innerHTML = `
+        <div class="recovery-step">
+          <div class="step-num">1</div>
+          <div>
+            <strong>Revisit Prerequisite: ${escapeHTML(step1.prereq)}</strong>
+            <p style="font-size:0.83rem; color:var(--text-muted);">Review core rules for <em>${escapeHTML(step1.concept)}</em> before taking on complex responsive layouts or APIs.</p>
+          </div>
+        </div>
+        <div class="recovery-step">
+          <div class="step-num">2</div>
+          <div>
+            <strong>Interactive Sandbox Practice: ${escapeHTML(step2.concept)}</strong>
+            <p style="font-size:0.83rem; color:var(--text-muted);">Open the Live Code Runner and build a 10-line minimal working example isolating this concept.</p>
+          </div>
+        </div>
+        <div class="recovery-step">
+          <div class="step-num">3</div>
+          <div>
+            <strong>Ask Campus Buddy for Clarification:</strong>
+            <p style="font-size:0.83rem; color:var(--text-muted);">Click "Ask AI Tutor" and enter: <code>"Explain ${escapeHTML(step1.concept)} simply"</code>.</p>
+          </div>
+        </div>
+      `;
+
+      dashRecoveryContent.innerHTML = `
+        <div style="background:var(--color-warning-bg); border-left:3px solid var(--color-warning); padding:10px; border-radius:4px; font-size:0.85rem; margin-bottom:12px;">
+          <strong>Top Learning Gap:</strong> ${escapeHTML(step1.concept)} (Prereq: ${escapeHTML(step1.prereq)})
+        </div>
+        <button class="btn btn-teal btn-sm" onclick="askTutorSpecific('Explain ${escapeHTML(step1.concept)} and its prerequisites')">
+          Ask Tutor About ${escapeHTML(step1.concept)} →
+        </button>
+      `;
+    }
+
+    function retakeDiagnosticQuiz() {
+      if (confirm('Retake the diagnostic assessment? Your previous score will be updated.')) {
+        startDiagnosticQuiz();
+      }
+    }
+
+    /* ====================================================================
+       8. VISUAL LEARNING TREE LOGIC & MODAL
+       ==================================================================== */
+    const conceptTreeData = {
+      'html-basics': {
+        title: "HTML5 Semantics & Structure",
+        track: "Web Foundations",
+        status: "Mastered",
+        prereqs: ["None (Foundational Root)"],
+        unblocks: ["CSS Box Model", "DOM Manipulation"],
+        summary: "Semantic tags describe their content's purpose to browsers, developers, and assistive screen readers. Always prefer semantic elements (<article>, <nav>, <header>) over non-semantic <div> tags.",
+        commonMistake: "Using <div> for every single element and wrapping entire buttons in <a> tags.",
+        code: "<header>\n  <nav>\n    <a href='#home'>Home</a>\n    <a href='#about'>About</a>\n  </nav>\n</header>"
+      },
+      'css-box': {
+        title: "CSS Box Model",
+        track: "Web Foundations",
+        status: "Core Prerequisite",
+        prereqs: ["HTML Elements"],
+        unblocks: ["Flexbox & Grid", "Responsive UI"],
+        summary: "Every HTML element is a box containing Content, Padding (inner spacing), Border, and Margin (outer spacing). Understanding `box-sizing: border-box` is critical to stop unexpected overflow.",
+        commonMistake: "Increasing padding and wondering why the element pushed outside its container.",
+        code: "* {\n  box-sizing: border-box;\n}\n.element {\n  padding: 12px;\n  margin: 16px;\n}"
+      },
+      'css-flex': {
+        title: "Flexbox & Grid Layouts",
+        track: "Web Foundations",
+        status: "Ready",
+        prereqs: ["CSS Box Model"],
+        unblocks: ["Responsive UI", "Full Web Applications"],
+        summary: "Flexbox aligns and distributes space across 1 dimension (rows or columns). Grid manages 2-dimensional layouts with rows and columns simultaneously.",
+        commonMistake: "Trying to center elements using margin hacks instead of `display: flex; justify-content: center; align-items: center;`.",
+        code: ".center-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}"
+      },
+      'responsive': {
+        title: "Responsive Web Design & Media Queries",
+        track: "Web Foundations",
+        status: "Ready",
+        prereqs: ["Flexbox & Grid"],
+        unblocks: ["Hackathon MVP UI"],
+        summary: "Ensures websites adapt smoothly between desktop screens, tablets, and mobile smartphones using flexible units (%, rem) and `@media` queries.",
+        commonMistake: "Hardcoding fixed pixel widths like `width: 1200px;` which causes horizontal scroll on phones.",
+        code: "@media (max-width: 768px) {\n  .sidebar { display: none; }\n}"
+      },
+      'js-variables': {
+        title: "Variable Scoping & Data Types",
+        track: "Programming Logic",
+        status: "Mastered",
+        prereqs: ["Syntax Basics"],
+        unblocks: ["DOM Manipulation", "Async JS"],
+        summary: "`const` prevents variable reassignment and is block-scoped. `let` allows reassignment. Avoid `var` in modern JS to prevent variable leaking.",
+        commonMistake: "Confusing `const` immutability: `const obj = {}` still lets you mutate `obj.property`.",
+        code: "const PI = 3.14159;\nlet userScore = 0;\nuserScore += 10;"
+      },
+      'js-dom': {
+        title: "DOM Manipulation & Event Listeners",
+        track: "Programming Logic",
+        status: "Core Prerequisite",
+        prereqs: ["HTML Semantics", "Variable Scoping"],
+        unblocks: ["Interactive Web Apps", "Hackathon MVPs"],
+        summary: "The Document Object Model (DOM) is the tree representation of your page that JavaScript can inspect, alter, and listen to events on.",
+        commonMistake: "Querying elements before the DOM has loaded or using inline `onclick='...'` in HTML.",
+        code: "const btn = document.querySelector('#action-btn');\nbtn.addEventListener('click', (e) => {\n  console.log('Clicked!');\n});"
+      },
+      'js-async': {
+        title: "Asynchronous JS & Fetch API",
+        track: "Programming Logic",
+        status: "Core Prerequisite",
+        prereqs: ["DOM Manipulation", "Callbacks & Promises"],
+        unblocks: ["API Integrations", "Capstone Projects"],
+        summary: "Handles non-blocking I/O operations like network requests using Promises and `async / await` syntax so the browser UI does not freeze.",
+        commonMistake: "Forgetting `await` before `fetch()` or forgetting `try/catch` error handling.",
+        code: "async function getData() {\n  try {\n    const res = await fetch('/api/data');\n    const json = await res.json();\n  } catch (err) {\n    console.error(err);\n  }\n}"
+      },
+      'python-ds': {
+        title: "Python Data Structures",
+        track: "Programming Logic",
+        status: "Ready",
+        prereqs: ["Basic Python Loops"],
+        unblocks: ["Backend APIs", "Machine Learning"],
+        summary: "Mastering Lists (mutable collections), Tuples (immutable fixed records), and Dictionaries (hash maps with key-value access).",
+        commonMistake: "Modifying a list while looping over it.",
+        code: "scores = [90, 85, 78]\nstudent = {'name': 'Ananya', 'gpa': 3.9}"
+      },
+      'git-flow': {
+        title: "Git Version Control",
+        track: "Applied Engineering",
+        status: "Core Prerequisite",
+        prereqs: ["Command Line Basics"],
+        unblocks: ["Team Hackathons", "Open Source"],
+        summary: "Version control allows multiple students to branch, write code concurrently, and merge without overwriting each other's work.",
+        commonMistake: "Working directly on the `main` branch during a team hackathon and causing massive merge conflicts.",
+        code: "git checkout -b feature/login-page\ngit add .\ngit commit -m 'feat: added validation'\ngit push origin feature/login-page"
+      },
+      'hackathon-mvp': {
+        title: "Hackathon MVP Engineering",
+        track: "Applied Engineering",
+        status: "Ready",
+        prereqs: ["Responsive UI", "DOM Manipulation", "Git"],
+        unblocks: ["Winning Competitions"],
+        summary: "Prioritizing the 1 core killer feature that demonstrates the solution, ignoring edge cases for the demo, and building an airtight 3-minute pitch.",
+        commonMistake: "Spending 18 hours building a database authentication page when judges only want to see the core AI/hardware feature.",
+        code: "// MVP Rule: Build 1 working feature with demo test data."
+      },
+      'capstone': {
+        title: "College Capstone & Final Year Project",
+        track: "Applied Engineering",
+        status: "Advanced",
+        prereqs: ["Async APIs", "Git", "Hackathon MVP"],
+        unblocks: ["Placement Interviews"],
+        summary: "Complete full-stack architecture with a documented database schema, error logging, automated tests, and clear deployment pipeline.",
+        commonMistake: "Lack of project documentation and not knowing how to explain code architecture during college viva.",
+        code: "// Capstone Checklist: Code + ER Diagram + Readme + Video Demo"
+      }
+    };
+
+    function updateLearningTreeStatuses(gaps, mastered) {
+      const gapConceptNames = gaps.map(g => g.concept);
+
+      // Map gap concepts to node IDs
+      const conceptToNodeId = {
+        'HTML Semantics': 'html-basics',
+        'CSS Box Model': 'node-css-box',
+        'CSS Box Sizing': 'node-css-box',
+        'Variable Scoping': 'js-variables',
+        'DOM Manipulation': 'node-js-dom',
+        'Asynchronous JavaScript': 'node-js-async',
+        'Async / Await Error Handling': 'node-js-async',
+        'Python Data Mutability': 'node-python-ds',
+        'Git Version Control': 'node-git-flow',
+        'Hackathon MVP Planning': 'node-hackathon-mvp'
+      };
+
+      for (const [conceptName, nodeId] of Object.entries(conceptToNodeId)) {
+        const el = document.getElementById(nodeId);
+        if (!el) continue;
+
+        if (gapConceptNames.includes(conceptName)) {
+          el.className = 'tree-node gap-flagged';
+          const badge = el.querySelector('.node-status-badge');
+          if (badge) badge.textContent = "Gap Flagged";
+        } else if (mastered.includes(conceptName)) {
+          el.className = 'tree-node mastered';
+          const badge = el.querySelector('.node-status-badge');
+          if (badge) badge.textContent = "Mastered";
+        }
+      }
+    }
+
+    function showNodeDetails(nodeKey) {
+      const data = conceptTreeData[nodeKey];
+      if (!data) return;
+
+      const modal = document.getElementById('node-modal');
+      const content = document.getElementById('modal-content');
+
+      content.innerHTML = `
+        <span class="pill pill-teal" style="margin-bottom:8px;">${escapeHTML(data.track)}</span>
+        <h3 id="modal-title" style="font-size:1.3rem; margin:6px 0 12px; color:var(--text-main);">${escapeHTML(data.title)}</h3>
+
+        <div style="background:var(--bg-cream); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px; margin-bottom:14px;">
+          <div style="font-size:0.83rem; margin-bottom:6px;"><strong>Prerequisites:</strong> ${data.prereqs.map(p => `<span class="prereq-badge">${escapeHTML(p)}</span>`).join(' ')}</div>
+          <div style="font-size:0.83rem;"><strong>Unblocks:</strong> ${data.unblocks.map(u => `<span class="pill pill-blue">${escapeHTML(u)}</span>`).join(' ')}</div>
+        </div>
+
+        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">${escapeHTML(data.summary)}</p>
+
+        <div style="background:#FEF2F2; border-left:3px solid #EF4444; padding:10px 14px; border-radius:4px; font-size:0.83rem; color:#991B1B; margin-bottom:14px;">
+          <strong>⚠️ Common Student Mistake:</strong> ${escapeHTML(data.commonMistake)}
+        </div>
+
+        <h5 style="font-size:0.85rem; font-weight:700; margin-bottom:6px;">Example Pattern:</h5>
+        <pre class="msg-code-block"><code>${escapeHTML(data.code)}</code></pre>
+
+        <div style="display:flex; gap:10px; margin-top:18px;">
+          <button class="btn btn-teal btn-sm" onclick="askTutorSpecific('Explain ${escapeHTML(data.title)} and show code examples')">Ask AI Tutor</button>
+          <button class="btn btn-outline btn-sm" onclick="closeNodeModal()">Close</button>
+        </div>
+      `;
+
+      modal.classList.add('open');
+    }
+
+    function closeNodeModal() {
+      document.getElementById('node-modal').classList.remove('open');
+    }
+
+    function closeModalOnOutsideClick(e) {
+      if (e.target.id === 'node-modal') {
+        closeNodeModal();
+      }
+    }
+
+    // Escape key modal close accessibility
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeNodeModal();
+    });
+
+    /* ====================================================================
+       9. LIVE CODE SANDBOX & PRACTICE
+       Interactive HTML/CSS/JS execution in sandboxed iframe.
+       ==================================================================== */
+    function switchPracticeTab(tab) {
+      document.querySelectorAll('.practice-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('practice-tab-sandbox').style.display = 'none';
+      document.getElementById('practice-tab-flashcards').style.display = 'none';
+      document.getElementById('practice-tab-challenges').style.display = 'none';
+
+      if (tab === 'sandbox') {
+        document.querySelectorAll('.practice-tab-btn')[0].classList.add('active');
+        document.getElementById('practice-tab-sandbox').style.display = 'block';
+        runSandboxCode();
+      } else if (tab === 'flashcards') {
+        document.querySelectorAll('.practice-tab-btn')[1].classList.add('active');
+        document.getElementById('practice-tab-flashcards').style.display = 'block';
+      } else if (tab === 'challenges') {
+        document.querySelectorAll('.practice-tab-btn')[2].classList.add('active');
+        document.getElementById('practice-tab-challenges').style.display = 'block';
+      }
+    }
+
+    function runSandboxCode() {
+      const html = document.getElementById('sandbox-html').value;
+      const css = document.getElementById('sandbox-css').value;
+      const js = document.getElementById('sandbox-js').value;
+      const iframe = document.getElementById('sandbox-preview-frame');
+
+      const sourceDoc = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { margin: 0; padding: 16px; font-family: sans-serif; }
+            ${css}
+          </style>
+        </head>
+        <body>
+          ${html}
+          <script>
+            try {
+              ${js}
+            } catch (err) {
+              document.body.innerHTML += '<div style="color:red; background:#fee2e2; padding:10px; margin-top:10px; border-radius:6px; font-family:monospace;">JavaScript Error: ' + err.message + '</div>';
+            }
+          <\/script>
+        </body>
+        </html>
+      `;
+
+      iframe.srcdoc = sourceDoc;
+
+      // Unlock code runner badge
+      unlockBadge('codeRunner');
+    }
+
+    function loadSandboxTemplate(type) {
+      const htmlBox = document.getElementById('sandbox-html');
+      const cssBox = document.getElementById('sandbox-css');
+      const jsBox = document.getElementById('sandbox-js');
+
+      if (type === 'counter') {
+        htmlBox.value = `<div class="demo-card">\n  <h2>Hello Campus Learner! 🎓</h2>\n  <p>Clicks recorded: <span id="count">0</span></p>\n  <button id="btn">Click Me!</button>\n</div>`;
+        cssBox.value = `.demo-card {\n  font-family: sans-serif;\n  padding: 20px;\n  background: #E6FFFA;\n  border: 2px solid #0D9488;\n  border-radius: 12px;\n  text-align: center;\n}\nbutton {\n  background: #0D9488;\n  color: white;\n  border: none;\n  padding: 8px 16px;\n  border-radius: 20px;\n  cursor: pointer;\n  font-weight: bold;\n}`;
+        jsBox.value = `let count = 0;\nconst btn = document.getElementById('btn');\nconst countSpan = document.getElementById('count');\n\nbtn.addEventListener('click', () => {\n  count++;\n  countSpan.textContent = count;\n});`;
+      } else if (type === 'flexbox') {
+        htmlBox.value = `<div class="flex-container">\n  <div class="box">Box 1</div>\n  <div class="box">Box 2</div>\n  <div class="box">Box 3</div>\n</div>`;
+        cssBox.value = `.flex-container {\n  display: flex;\n  justify-content: space-around;\n  align-items: center;\n  gap: 12px;\n  padding: 20px;\n  background: #EFF6FF;\n  border-radius: 12px;\n}\n.box {\n  background: #2563EB;\n  color: white;\n  padding: 20px 30px;\n  border-radius: 8px;\n  font-weight: bold;\n}`;
+        jsBox.value = `console.log("Flexbox loaded!");`;
+      } else if (type === 'todo') {
+        htmlBox.value = `<div class="todo-app">\n  <h3>Campus Task List</h3>\n  <input type="text" id="task-input" placeholder="New study goal...">\n  <button id="add-btn">Add Task</button>\n  <ul id="task-list"></ul>\n</div>`;
+        cssBox.value = `.todo-app { max-width: 300px; margin: 0 auto; }\ninput { padding: 8px; width: 70%; }\nbutton { padding: 8px; background: #0D9488; color: white; border: none; }\nul { padding-left: 20px; margin-top: 10px; }\nli { margin-bottom: 6px; }`;
+        jsBox.value = `const input = document.getElementById('task-input');\nconst addBtn = document.getElementById('add-btn');\nconst list = document.getElementById('task-list');\n\naddBtn.addEventListener('click', () => {\n  if(!input.value) return;\n  const li = document.createElement('li');\n  li.textContent = input.value;\n  list.appendChild(li);\n  input.value = '';\n});`;
+      }
+
+      runSandboxCode();
+      showToast(`Loaded ${type} template`);
+    }
+
+    function checkChallengeAnswer(challengeId, optionIdx, btn) {
+      const feedback = document.getElementById(`challenge-${challengeId}-feedback`);
+      feedback.style.display = 'block';
+
+      if (challengeId === 1) {
+        if (optionIdx === 1) {
+          feedback.style.background = '#ECFDF5';
+          feedback.style.color = '#047857';
+          feedback.textContent = '🎉 Correct! Flexbox with justify-content: center and align-items: center is the gold standard modern method.';
+        } else {
+          feedback.style.background = '#FEF2F2';
+          feedback.style.color = '#B91C1C';
+          feedback.textContent = '❌ Incorrect. Remember: "float: center" is not a valid CSS property!';
+        }
+      } else if (challengeId === 2) {
+        if (optionIdx === 2) {
+          feedback.style.background = '#ECFDF5';
+          feedback.style.color = '#047857';
+          feedback.textContent = '🎉 Correct! Any function using `await` must be declared with the `async` keyword.';
+        } else {
+          feedback.style.background = '#FEF2F2';
+          feedback.style.color = '#B91C1C';
+          feedback.textContent = '❌ Incorrect. The `async` keyword enables asynchronous execution in JavaScript functions.';
+        }
+      }
+    }
+
+    /* ====================================================================
+       10. PROGRESS & BADGES ENGINE
+       ==================================================================== */
+    function unlockBadge(badgeKey) {
+      if (!appState.badges[badgeKey]) {
+        appState.badges[badgeKey] = true;
+        saveState();
+        showToast(`🏆 Badge Unlocked: ${badgeKey}! Check My Progress.`);
+      }
+      renderBadgesUI();
+    }
+
+    function renderBadgesUI() {
+      const b = appState.badges;
+      setCardBadge('badge-first-chat', b.firstChat);
+      setCardBadge('badge-diagnostic', b.diagnostic);
+      setCardBadge('badge-code-runner', b.codeRunner);
+      setCardBadge('badge-multilingual', b.multilingual);
+      setCardBadge('badge-hackathon', b.hackathon);
+
+      let earnedCount = 0;
+      for (const k in b) if (b[k]) earnedCount++;
+      const counter = document.getElementById('prog-badges-earned');
+      if (counter) counter.textContent = `${earnedCount} / 5`;
+    }
+
+    function setCardBadge(elementId, isUnlocked) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        if (isUnlocked) el.classList.add('unlocked');
+        else el.classList.remove('unlocked');
+      }
+    }
+
+    function renderProgressView() {
+      renderBadgesUI();
+
+      // Stats
+      document.getElementById('prog-chat-count').textContent = appState.chatStats.totalAsked || 1;
+      document.getElementById('prog-quiz-attempts').textContent = appState.diagnostic.taken ? "1" : "0";
+      document.getElementById('prog-best-score').textContent = appState.diagnostic.taken ? `${appState.diagnostic.score}%` : "--";
+
+      // Gaps Table
+      const container = document.getElementById('progress-gaps-table-container');
+      const gaps = appState.diagnostic.gapsDetected || [];
+
+      if (!appState.diagnostic.taken) {
+        container.innerHTML = `<p style="font-size:0.88rem; color:var(--text-muted);">You haven't completed the Diagnostic Assessment yet. <button class="btn btn-teal btn-sm" onclick="switchView('diagnose')">Take Assessment Now</button></p>`;
+      } else if (gaps.length === 0) {
+        container.innerHTML = `<div style="background:#ECFDF5; padding:16px; border-radius:8px; color:#065F46; font-size:0.9rem;"><strong>✓ Zero Learning Gaps Detected!</strong> You demonstrated solid conceptual mastery across all evaluated foundational topics.</div>`;
+      } else {
+        let rows = gaps.map((g, i) => `
+          <tr>
+            <td><strong>#${i+1}</strong></td>
+            <td><strong>${escapeHTML(g.concept)}</strong></td>
+            <td><span class="prereq-badge">${escapeHTML(g.prereq)}</span></td>
+            <td><span class="pill pill-warning">Needs Review</span></td>
+            <td><button class="btn btn-outline btn-sm" onclick="askTutorSpecific('Help me fix my learning gap in ${escapeHTML(g.concept)}')">Ask Tutor</button></td>
+          </tr>
+        `).join('');
+
+        container.innerHTML = `
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Identified Concept Gap</th>
+                  <th>Missing Prerequisite</th>
+                  <th>Status</th>
+                  <th>Remedial Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+    }
+
+    function exportStudentData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `EduBridge_Progress_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Student learning record downloaded.');
+    }
+
+    /* ====================================================================
+       11. TEACHER PORTAL (SIMULATED COHORT DATA)
+       ==================================================================== */
+    const demoCohortStudents = [
+      { roll: "24CS01", name: "Aarav Sharma", score: 90, gap: "None (Advanced)", status: "Advanced", rec: "Assign Capstone Leadership" },
+      { roll: "24CS02", name: "Ananya Reddy", score: 60, gap: "CSS Box Model", status: "Needs Support", rec: "15-min DevTools Box Model Lab" },
+      { roll: "24CS03", name: "Bhavya Patel", score: 70, gap: "Async JS (Promises)", status: "On Track", rec: "Peer Pairing with Aarav" },
+      { roll: "24CS04", name: "Chaitanya Rao", score: 50, gap: "CSS Box Model", status: "Needs Support", rec: "Interactive Box Model Sandbox" },
+      { roll: "24CS05", name: "Deepika Verma", score: 80, gap: "Git Branching", status: "On Track", rec: "Practice Git Merge Conflicts" },
+      { roll: "24CS06", name: "Eashan Kumar", score: 40, gap: "DOM Manipulation", status: "At Risk", rec: "Remedial JavaScript DOM Clinic" },
+      { roll: "24CS07", name: "Farhan Ali", score: 70, gap: "Python Mutability", status: "On Track", rec: "Python Mutability Flashcard drills" },
+      { roll: "24CS08", name: "Gayatri Nair", score: 60, gap: "CSS Box Model", status: "Needs Support", rec: "15-min DevTools Box Model Lab" },
+      { roll: "24CS09", name: "Harshith Varma", score: 90, gap: "None (Advanced)", status: "Advanced", rec: "Hackathon MVP Team Lead" },
+      { roll: "24CS10", name: "Ishaan Gupta", score: 50, gap: "Async JS (Promises)", status: "Needs Support", rec: "Event Loop Physical Roleplay" }
+    ];
+
+    function renderTeacherCohort() {
+      const tbody = document.getElementById('teacher-table-body');
+      tbody.innerHTML = '';
+
+      demoCohortStudents.forEach(s => {
+        let statusBadge = '';
+        if (s.status === 'Advanced') statusBadge = '<span class="pill pill-success">Advanced</span>';
+        else if (s.status === 'On Track') statusBadge = '<span class="pill pill-blue">On Track</span>';
+        else statusBadge = '<span class="pill pill-danger">Needs Remediation</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.roll}</strong></td>
+          <td>${s.name}</td>
+          <td><strong>${s.score}%</strong></td>
+          <td><span style="color:#B91C1C; font-weight:600;">${s.gap}</span></td>
+          <td>${statusBadge}</td>
+          <td>${s.rec}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterTeacherTable(query) {
+      const term = query.toLowerCase();
+      const rows = document.querySelectorAll('#teacher-table-body tr');
+      rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        if (text.includes(term)) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+
+    function downloadTeacherDemoReport() {
+      let csv = "RollNo,StudentName,DiagnosticScore,PrimaryIdentifiedGap,Status,SuggestedIntervention\n";
+      demoCohortStudents.forEach(s => {
+        csv += `"${s.roll}","${s.name}",${s.score}%,"${s.gap}","${s.status}","${s.rec}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Demo_Classroom_Gap_Report_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Downloaded demo classroom gap report (CSV).');
+    }
+
+    /* ====================================================================
+       12. HELPER UTILITIES & INITIALIZATION
+       ==================================================================== */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>ℹ️</span> <div>${escapeHTML(message)}</div>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Application Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      // Restore user state
+      if (appState.currentLanguage && appState.currentLanguage !== 'en') {
+        changeLanguage(appState.currentLanguage);
+      }
+
+      // Restore diagnostic stats on dashboard if taken
+      if (appState.diagnostic.taken) {
+        document.getElementById('dash-score').textContent = `${appState.diagnostic.score}%`;
+        document.getElementById('dash-gaps').textContent = `${appState.diagnostic.gapsDetected.length} Gaps`;
+        document.getElementById('dash-mastered').textContent = `${appState.diagnostic.masteredConcepts.length} / 12`;
+        renderRecoveryPlan(appState.diagnostic.gapsDetected);
+        updateLearningTreeStatuses(appState.diagnostic.gapsDetected, appState.diagnostic.masteredConcepts);
+      }
+
+      renderBadgesUI();
+    });
+  </script>
+</body>
+</html>
